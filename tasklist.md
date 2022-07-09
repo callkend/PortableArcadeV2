@@ -1,0 +1,35 @@
+
+- Firmware
+    - Main Display
+        - ~~Import PixiPusher Driver~~
+        - Implement Draw Functions
+            - Import Neo Pixel Libraries
+            - "Glue" Neo Pixel Libraries to PixiPusher Driver
+        - Auto brightness
+    - IO Bus
+        - Scoreboard
+        - Joystick
+        - Buttons
+    - SPI Bus
+        - Music and Sounds
+            - SD Card Read
+            - File System
+            - WAV Decode
+            - PWM Output
+        - Multi-Player
+            - Xbee Driver
+            - ???
+
+- Software
+    - Menu System
+        - TBD
+    - Snake
+        - Import
+        - Expand
+    - Tetris
+        - Import
+        - Expand
+    - Pong
+        - TBD
+    - BattleShip
+        - TBD
