@@ -1,13 +1,3 @@
 
-# MPLABX Project Files
-/build/
-/debug/
-/dist/
-
-/nbproject/private/
-Makefile-*.mk
-Makefile-*.properties
-Package-*.bash
-.generated_files
-
+# MacOS Directory Store file
 .DS_Store
