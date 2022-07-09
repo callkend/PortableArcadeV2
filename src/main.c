@@ -50,6 +50,11 @@
 #include "mcc_generated_files/system.h"
 #include "mcc_generated_files/usb/usb.h"
 
+#include <Adafruit_NeoPixel.h>
+#include <Adafruit_NeoMatrix.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SPITFT_Macros.h>
+
 #include "PixiPusher/PixiPusher.h"
 #include "PixiPusher/color.h"
 #include "PixiPusher/setup.h"
