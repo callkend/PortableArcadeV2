@@ -72,6 +72,9 @@
   </logicalFolder>
   <sourceRootList>
     <Elem>PixiPusher</Elem>
+    <Elem>Adafruit-GFX-Library-master</Elem>
+    <Elem>Adafruit_NeoMatrix-master</Elem>
+    <Elem>Adafruit_NeoPixel-master</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
@@ -81,13 +84,13 @@
         <targetDevice>PIC24FJ128GB406</targetDevice>
         <targetHeader></targetHeader>
         <targetPluginBoard></targetPluginBoard>
-        <platformTool>pk4hybrid</platformTool>
+        <platformTool>noID</platformTool>
         <languageToolchain>XC16</languageToolchain>
         <languageToolchainVersion>1.60</languageToolchainVersion>
         <platform>4</platform>
       </toolsSet>
       <packs>
-        <pack name="PIC24F-GA-GB_DFP" vendor="Microchip" version="1.3.109"/>
+        <pack name="PIC24F-GA-GB_DFP" vendor="Microchip" version="1.5.181"/>
       </packs>
       <ScriptingSettings>
       </ScriptingSettings>
@@ -108,6 +111,7 @@
       </compileType>
       <makeCustomizationType>
         <makeCustomizationPreStepEnabled>false</makeCustomizationPreStepEnabled>
+        <makeUseCleanTarget>false</makeUseCleanTarget>
         <makeCustomizationPreStep></makeCustomizationPreStep>
         <makeCustomizationPostStepEnabled>false</makeCustomizationPostStepEnabled>
         <makeCustomizationPostStep></makeCustomizationPostStep>
@@ -116,6 +120,7 @@
         <makeCustomizationNormalizeHexFile>false</makeCustomizationNormalizeHexFile>
       </makeCustomizationType>
       <C30>
+        <property key="cast-align" value="false"/>
         <property key="code-model" value="default"/>
         <property key="const-model" value="default"/>
         <property key="data-model" value="default"/>
@@ -130,6 +135,7 @@
         <property key="enable-short-double" value="false"/>
         <property key="enable-symbols" value="true"/>
         <property key="enable-unroll-loops" value="false"/>
+        <property key="expand-pragma-config" value="false"/>
         <property key="extra-include-directories" value=""/>
         <property key="isolate-each-function" value="false"/>
         <property key="keep-inline" value="false"/>
@@ -180,6 +186,7 @@
       </C30-AS>
       <C30-CO>
         <property key="coverage-enable" value=""/>
+        <property key="stack-guidance" value="false"/>
       </C30-CO>
       <C30-LD>
         <property key="additional-options-use-response-files" value="false"/>
@@ -228,6 +235,7 @@
         <property key="warn-section-align" value="false"/>
       </C30-LD>
       <C30Global>
+        <property key="combine-sourcefiles" value="false"/>
         <property key="common-include-directories" value=""/>
         <property key="dual-boot-partition" value="0"/>
         <property key="fast-math" value="false"/>

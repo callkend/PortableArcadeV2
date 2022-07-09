@@ -47,12 +47,12 @@
 
 // FSEC
 #pragma config BWRP = OFF    //Boot Segment Write Protect->Boot segment may be written
-#pragma config BSS = OFF    //Boot segment Protect->No Protection (other than BWRP)
+// #pragma config BSS = OFF    //Boot segment Protect->No Protection (other than BWRP)
 #pragma config BSEN = OFF    //Boot Segment Control bit->No Boot Segment
 #pragma config GWRP = OFF    //General Segment Write Protect->Writes to program memory are allowed
-#pragma config GSS = OFF    //General Segment Code Protect->Code protection is disabled
+// #pragma config GSS = OFF    //General Segment Code Protect->Code protection is disabled
 #pragma config CWRP = OFF    //Configuration Segment Program Write Protection bit->Configuration Segment may be written
-#pragma config CSS = DIS    //Configuration Segment Code Protection Level bits->No Protection (other than CWRP)
+// #pragma config CSS = DIS    //Configuration Segment Code Protection Level bits->No Protection (other than CWRP)
 #pragma config AIVTDIS = DISABLE    //Alternate Interrupt Vector Table Disable bit->Disable AIVT
 
 // FBSLIM

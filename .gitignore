@@ -8,5 +8,6 @@
 Makefile-*.mk
 Makefile-*.properties
 Package-*.bash
+.generated_files
 
 .DS_Store

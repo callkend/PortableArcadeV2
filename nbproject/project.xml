@@ -14,6 +14,9 @@
             <make-dep-projects/>
             <sourceRootList>
                 <sourceRootElem>PixiPusher</sourceRootElem>
+                <sourceRootElem>Adafruit-GFX-Library-master</sourceRootElem>
+                <sourceRootElem>Adafruit_NeoMatrix-master</sourceRootElem>
+                <sourceRootElem>Adafruit_NeoPixel-master</sourceRootElem>
             </sourceRootList>
             <confList>
                 <confElem>
