@@ -28,6 +28,7 @@
       <logicalFolder name="f1" displayName="PixiPusher" projectFiles="true">
         <itemPath>PixiPusher/setup.h</itemPath>
         <itemPath>PixiPusher/PP_Config.h</itemPath>
+        <itemPath>PixiPusher/PixiMatrix.h</itemPath>
         <itemPath>PixiPusher/PixiPixel.h</itemPath>
         <itemPath>PixiPusher/Color.h</itemPath>
       </logicalFolder>
@@ -59,6 +60,7 @@
       </logicalFolder>
       <logicalFolder name="f1" displayName="PixiPusher" projectFiles="true">
         <itemPath>PixiPusher/setup.c</itemPath>
+        <itemPath>PixiPusher/PixiMatrix.c</itemPath>
         <itemPath>PixiPusher/PixiPixel.c</itemPath>
         <itemPath>PixiPusher/Color.c</itemPath>
       </logicalFolder>
