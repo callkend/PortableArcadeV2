@@ -50,8 +50,8 @@
 #include "mcc_generated_files/system.h"
 #include "mcc_generated_files/usb/usb.h"
 
-#include "PixiPusher/PixiPusher.h"
-#include "PixiPusher/color.h"
+#include "PixiPusher/PixiPixel.h"
+#include "PixiPusher/Color.h"
 #include "PixiPusher/setup.h"
 
 /*
@@ -62,7 +62,7 @@ int main(void)
     // initialize the device
     SYSTEM_Initialize();
     
-    PP_Setup();
+    PP_Init();
     
     Setup();
 

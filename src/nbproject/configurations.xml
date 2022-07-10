@@ -26,10 +26,10 @@
         <itemPath>mcc_generated_files/system.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="PixiPusher" projectFiles="true">
-        <itemPath>PixiPusher/color.h</itemPath>
-        <itemPath>PixiPusher/PixiPusher.h</itemPath>
         <itemPath>PixiPusher/setup.h</itemPath>
         <itemPath>PixiPusher/PP_Config.h</itemPath>
+        <itemPath>PixiPusher/PixiPixel.h</itemPath>
+        <itemPath>PixiPusher/Color.h</itemPath>
       </logicalFolder>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
@@ -58,8 +58,9 @@
         <itemPath>mcc_generated_files/traps.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="PixiPusher" projectFiles="true">
-        <itemPath>PixiPusher/PixiPusher.c</itemPath>
         <itemPath>PixiPusher/setup.c</itemPath>
+        <itemPath>PixiPusher/PixiPixel.c</itemPath>
+        <itemPath>PixiPusher/Color.c</itemPath>
       </logicalFolder>
       <itemPath>main.c</itemPath>
     </logicalFolder>
@@ -103,7 +104,7 @@
         </archiverTool>
         <loading>
           <useAlternateLoadableFile>false</useAlternateLoadableFile>
-          <parseOnProdLoad>false</parseOnProdLoad>
+          <parseOnProdLoad>true</parseOnProdLoad>
           <alternateLoadableFile></alternateLoadableFile>
         </loading>
         <subordinates>
