@@ -12,9 +12,10 @@
 *********************************************************/
 /** INCLUDES ********************************************/
 #include <xc.h>
+#include <stdlib.h>
 #include <stdbool.h>
 
-#include "PixiPusher.h"
+#include "PixiPixel.h"
 #include "PP_Config.h"
 
 /********************************************************/
@@ -31,44 +32,46 @@ uint8_t LEDRAM[LEDBufferSize]; //Stores all LED data in on big array
 const int LEDSPNT1 = ((unsigned int)&LEDRAM + BytesPerChannel * 0);
 
 // Waveform Characteristics
-unsigned char ByteRate = 18;       // Changes how often bytes are sent
-unsigned char BitWidth = 8;        // Changes total width of a bit
-unsigned char ZeroWidth = 4;       // Changes the zero bit width
-unsigned int LatchWidth = 0x1000; // Changes the period between frames
+WS2812Settings pixelSettings = {    \
+    .ByteRate = 18,                 \
+    .BitWidth = 8,                  \
+    .ZeroWidth = 4,                 \
+    .LatchWidth = 0x1000            \
+};
 
 /**
  * Changes total width of a bit
  * @param bitWidth
  */
-void SetBitWidth(unsigned char bitWidth){
-    BitWidth = bitWidth;
+void PP_SetBitWidth(unsigned char bitWidth){
+    pixelSettings.BitWidth = bitWidth;
     
     //Adjust the byte rate so that overruns don't happen
     unsigned char tempByte = (bitWidth << 1) + 2;
-    ByteRate = tempByte < ByteRateMin ? ByteRateMin : tempByte;
+    pixelSettings.ByteRate = tempByte < ByteRateMin ? ByteRateMin : tempByte;
 }
 
 /**
  * Changes the zero bit width
  * @param zeroWidth
  */
-void SetZeroWidth(unsigned char zeroWidth){
-    ZeroWidthReg = zeroWidth;
+void PP_SetZeroWidth(unsigned char zeroWidth){
+    pixelSettings.ZeroWidth = ZeroWidthReg = zeroWidth;
 }
 
 /**
  * Changes the period between frames
  * @param latchWidth
  */
-void SetLatchWidth(unsigned int latchWidth){
-    LatchWidth = latchWidth;
+void PP_SetLatchWidth(unsigned int latchWidth){
+    pixelSettings.LatchWidth = latchWidth;
 }
     
-void PP_Setup(void)
+void PP_Init(void)
 {
     /****Init Memory****/
     unsigned char *pnt = &LEDRAM[0];
-
+    
     for (int i = 0; i < LEDBufferSize; i += 3)
     {
         *pnt++ = InitGreen;
@@ -128,10 +131,10 @@ void PP_Setup(void)
     /****PWM Setup****/
     //PWM 4 for the SPI clock source
     CCP4PRH = 0x0000; //Period Registers
-    CCP4PRL = BitWidth;
+    CCP4PRL = pixelSettings.BitWidth;
 
     CCP4RAH = 0x0000; //Pulse Width
-    CCP4RAL = ZeroWidth;
+    CCP4RAL = pixelSettings.ZeroWidth;
 
     CCP4CON3H = 0x0030; //Active high
 
@@ -188,6 +191,11 @@ void PP_Service(void)
 {
 }
 
+void PP_UpdateDisplay(void)
+{
+    DMACH0bits.CHEN = true; //Re Enable the Channel
+};
+
 void __attribute__((interrupt, no_auto_psv)) _DMA0Interrupt()
 {
     IFS0bits.DMA0IF = false; //Clear the flag
@@ -199,7 +207,7 @@ void __attribute__((interrupt, no_auto_psv)) _DMA0Interrupt()
         DMASRC0 = LEDSPNT1;        //Setup source pointer
         DMACNT0 = BytesPerChannel; //Set up the counter for 1024 pixels
 
-        LatchWidthReg = LatchWidth; //Should create an interrupt every 16mS
+        LatchWidthReg = pixelSettings.LatchWidth; //Should create an interrupt every 16mS
         IFS0bits.T1IF = false;      //Timer 1 Setup
         IEC0bits.T1IE = true;
     }
@@ -218,7 +226,7 @@ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt()
     IEC0bits.T1IE = false;
     IFS0bits.T1IF = false; //Lower the flag
 
-    DMACH0bits.CHEN = true; //Re Enable the Channel
-
-    ByteRateReg = ByteRate; //Setup to clock data into DMA
+    PP_UpdateDisplay();
+    
+    ByteRateReg = pixelSettings.ByteRate; //Setup to clock data into DMA
 }

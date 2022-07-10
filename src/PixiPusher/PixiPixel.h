@@ -19,12 +19,27 @@
 
     extern uint8_t LEDRAM[LEDBufferSize];
 
+    typedef struct
+    {
+        /** Changes how often bytes are sent */
+        unsigned char ByteRate;
+        
+        /** Changes total width of a bit */
+        unsigned char BitWidth;
+        
+        /** Changes the zero bit width */
+        unsigned char ZeroWidth;
+        
+        /** Changes the period between frames */
+        unsigned int LatchWidth;
+    } WS2812Settings;
+    
     /****Program Declarations********************************/
 
     /**
      * Initializes the PixiPusher Routines and starts transmitting the screen
      */
-    void PP_Setup(void);
+    void PP_Init(void);
 
     /**
      * Called periodically from main to keep the screen alive
@@ -37,19 +52,19 @@
      * Changes total width of a bit
      * @param bitWidth
      */
-    void SetBitWidth(unsigned char bitWidth);
+    void PP_SetBitWidth(unsigned char bitWidth);
     
     /**
      * Changes the zero bit width
      * @param zeroWidth
      */
-    void SetZeroWidth(unsigned char zeroWidth);
+    void PP_SetZeroWidth(unsigned char zeroWidth);
     
     /**
      * Changes the period between frames
      * @param latchWidth
      */
-    void SetLatchWidth(unsigned int latchWidth);
+    void PP_SetLatchWidth(unsigned int latchWidth);
     
     /****End Program Declarations****************************/
 
