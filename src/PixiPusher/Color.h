@@ -14,9 +14,10 @@ typedef struct {
     uint8_t R;
     uint8_t G;
     uint8_t B;
+    uint8_t A;
 } Color;
 
-const static Color Black = { .R = 0, .G = 0, .B = 0 };
-const static Color LowestWhite = { .R = 1, .G = 1, .B = 1 };
+const static Color Black = { .R = 0, .G = 0, .B = 0, .A = 0xFF };
+const static Color LowestWhite = { .R = 1, .G = 1, .B = 1, .A = 0xFF };
 
 #endif
