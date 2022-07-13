@@ -9,7 +9,21 @@ Color PG_GetPixel(PixiMatrix *matrix, uint16_t x, uint16_t y)
 
 void PG_SetPixel(PixiMatrix *matrix, uint16_t x, uint16_t y, Color c)
 {
-    PM_SetPixel(matrix, x, y, c);
+
+    if (c.A > 0)
+    {
+        if (c.A < 0xFF) {
+            Color current = PM_GetPixel(matrix, x, y);
+
+            uint8_t inverseA = c.A ^ 0xFF;
+
+            c.R = (c.R / inverseA) + (current.R / c.A);
+            c.G = (c.G / inverseA) + (current.G / c.A);
+            c.R = (c.B / inverseA) + (current.B / c.A);
+        }
+
+        PM_SetPixel(matrix, x, y, c);
+    }
 }
 
 void PG_Fill(PixiMatrix *matrix, Color c)
