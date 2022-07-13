@@ -36,7 +36,7 @@
         <itemPath>PixiPusher/Color.h</itemPath>
         <itemPath>PixiPusher/PixiGFX.h</itemPath>
       </logicalFolder>
-      <itemPath>PixiPusher/PortableArchade.h</itemPath>
+      <itemPath>PortableArchade.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
