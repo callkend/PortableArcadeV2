@@ -26,6 +26,9 @@
         <itemPath>mcc_generated_files/system.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="PixiPusher" projectFiles="true">
+        <logicalFolder name="f1" displayName="Fonts" projectFiles="true">
+          <itemPath>PixiPusher/Fonts/Font1.h</itemPath>
+        </logicalFolder>
         <itemPath>PixiPusher/setup.h</itemPath>
         <itemPath>PixiPusher/PP_Config.h</itemPath>
         <itemPath>PixiPusher/PixiMatrix.h</itemPath>
