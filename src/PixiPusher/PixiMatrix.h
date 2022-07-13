@@ -9,15 +9,13 @@
 #define PIXIMATRIX_H
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 #include <stdint.h>
 #include "color.h"
 
-    typedef struct PixiMatrix
-    {
+    typedef struct PixiMatrix {
         uint16_t Width;
         uint16_t Height;
         uint8_t *PixelArray;
@@ -26,9 +24,9 @@ extern "C"
 
     PixiMatrix PM_Init(uint16_t width, uint16_t height, uint8_t *pixelArray, const uint16_t *matrixMap);
 
-    void PM_SetPixel(PixiMatrix matrix, uint16_t x, uint16_t y, Color color);
+    void PM_SetPixel(PixiMatrix* matrix, uint16_t x, uint16_t y, Color color);
 
-    Color PM_GetPixel(PixiMatrix matrix, uint16_t x, uint16_t y);
+    Color PM_GetPixel(PixiMatrix* matrix, uint16_t x, uint16_t y);
 
 #ifdef __cplusplus
 }

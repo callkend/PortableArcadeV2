@@ -13,13 +13,13 @@ PixiMatrix PM_Init(uint16_t width, uint16_t height, uint8_t *pixelArray, const u
     return result;
 }
 
-uint8_t* PM_GetLinerLocation(PixiMatrix matrix, uint16_t x, uint16_t y) {
+uint8_t* PM_GetLinerLocation(PixiMatrix* matrix, uint16_t x, uint16_t y) {
     
-    uint16_t linerLocation = y * matrix.Width + x;
-    return &matrix.PixelArray[(matrix.MatrixMap[linerLocation] * 3)];
+    uint16_t linerLocation = y * matrix->Width + x;
+    return &matrix->PixelArray[(matrix->MatrixMap[linerLocation] * 3)];
 }
 
-void PM_SetPixel(PixiMatrix matrix, uint16_t x, uint16_t y, Color color) {
+void PM_SetPixel(PixiMatrix* matrix, uint16_t x, uint16_t y, Color color) {
     uint8_t *pnt = PM_GetLinerLocation(matrix, x, y);
 
     *pnt++ = color.G;
@@ -27,7 +27,7 @@ void PM_SetPixel(PixiMatrix matrix, uint16_t x, uint16_t y, Color color) {
     *pnt = color.B;
 }
 
-Color PM_GetPixel(PixiMatrix matrix, uint16_t x, uint16_t y) {
+Color PM_GetPixel(PixiMatrix* matrix, uint16_t x, uint16_t y) {
     uint8_t *pnt = PM_GetLinerLocation(matrix, x, y);
 
     Color result = {
