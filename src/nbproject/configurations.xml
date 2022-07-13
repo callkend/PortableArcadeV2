@@ -64,6 +64,9 @@
         <itemPath>mcc_generated_files/traps.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="PixiPusher" projectFiles="true">
+        <logicalFolder name="f1" displayName="Fonts" projectFiles="true">
+          <itemPath>PixiPusher/Fonts/Font1.c</itemPath>
+        </logicalFolder>
         <itemPath>PixiPusher/setup.c</itemPath>
         <itemPath>PixiPusher/PixiMatrix.c</itemPath>
         <itemPath>PixiPusher/PixiPixel.c</itemPath>
