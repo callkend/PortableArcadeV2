@@ -50,7 +50,7 @@ void PG_DrawHorizontalLine(PixiMatrix *matrix, uint16_t sx, uint16_t ex, uint16_
 
 void PG_DrawVerticalLine(PixiMatrix *matrix, uint16_t x, uint16_t sy, uint16_t ey, Color c)
 {
-    for (uint16_t y = sy; x <= ey; ++y)
+    for (uint16_t y = sy; y <= ey; ++y)
     {
         PM_SetPixel(matrix, x, y, c);
     }
