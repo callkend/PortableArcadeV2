@@ -51,6 +51,8 @@
 #include "mcc_generated_files/usb/usb.h"
 
 #include "PixiPusher/PixiPixel.h"
+#include "PixiPusher/PixiMatrix.h"
+#include "PixiPusher/PixiGFX.h"
 #include "PixiPusher/Color.h"
 #include "PixiPusher/setup.h"
 
@@ -65,6 +67,15 @@ int main(void)
     PP_Init();
     
     Setup();
+
+    extern uint16_t PixelMap[];
+    extern uint8_t LEDRAM[];
+    extern const PGfxFont Font1;
+
+    PixiMatrix matrix = PM_Init(16, 16, LEDRAM, PixelMap);
+    Color c = { .R = 8, .G = 2, .B = 0, .A = 0xFF };
+
+    PM_SetPixel(&matrix, 1, 1, c);
 
     while (1)
     {
@@ -86,7 +97,9 @@ int main(void)
             readCount = getsUSBUSART(readBuf, CDC_DATA_OUT_EP_SIZE);
 
             if (readCount > 0)
-            {
+            { 
+                PG_FillRectangle(&matrix, 0, 6, 8, 14, LowestWhite);
+                PG_DrawChar(&matrix, readBuf[0], 0, 6, c, Black, &Font1);
             }
         }
 
