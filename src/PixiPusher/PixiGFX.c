@@ -75,7 +75,7 @@ void PG_FillRectangle(PixiMatrix *matrix, uint16_t sx, uint16_t sy, uint16_t ex,
     }
 }
 
-void _PF_DrawChar(PixiMatrix *matrix, PGfxCharacter ch, int cursorX, int cursorY, Color foreColor, Color backColor)
+void _PG_DrawChar(PixiMatrix *matrix, PGfxCharacter ch, int cursorX, int cursorY, Color foreColor, Color backColor)
 {
 
     // Make sure the character has a render
@@ -101,10 +101,7 @@ void _PF_DrawChar(PixiMatrix *matrix, PGfxCharacter ch, int cursorX, int cursorY
                     if (px > 0 && px < matrix->Width &&
                         py > 0 && py < matrix->Height)
                     {
-
-                        PG_SetPixel(matrix, px, py, (row & 0b1000000) ? foreColor : backColor);
-
-                        row = row << 1;
+                        PG_SetPixel(matrix, px, py, (row & mask) ? foreColor : backColor);
                     }
                 }
             }
@@ -112,18 +109,18 @@ void _PF_DrawChar(PixiMatrix *matrix, PGfxCharacter ch, int cursorX, int cursorY
     }
 }
 
-void PF_DrawChar(PixiMatrix *matrix, char c, int cursorX, int cursorY, Color foreColor, Color backColor, const PGfxFont *font)
+void PG_DrawChar(PixiMatrix *matrix, char c, int cursorX, int cursorY, Color foreColor, Color backColor, const PGfxFont *font)
 {
 
     // Make sure the character is in the ASCII space
     if (c <= 128)
     {
         PGfxCharacter ch = font->Characters[(uint8_t)c];
-        _PF_DrawChar(matrix, ch, cursorX, cursorY, foreColor, backColor);
+        _PG_DrawChar(matrix, ch, cursorX, cursorY, foreColor, backColor);
     }
 }
 
-void PF_DrawText(PixiMatrix *matrix, char *text, int cursorX, int cursorY, Color foreColor, Color backColor, const PGfxFont *font)
+void PG_DrawText(PixiMatrix *matrix, char *text, int cursorX, int cursorY, Color foreColor, Color backColor, const PGfxFont *font)
 {
 
     while (*text)
@@ -132,7 +129,7 @@ void PF_DrawText(PixiMatrix *matrix, char *text, int cursorX, int cursorY, Color
         if (c <= 128)
         {
             PGfxCharacter ch = font->Characters[(uint8_t)c];
-            _PF_DrawChar(matrix, ch, cursorX, cursorY, foreColor, backColor);
+            _PG_DrawChar(matrix, ch, cursorX, cursorY, foreColor, backColor);
 
             cursorX = cursorX + ch.Width + 1;
         }
