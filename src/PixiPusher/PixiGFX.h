@@ -23,7 +23,7 @@ extern "C" {
 
 #define DEFINE_Blank_PGfxChar(width) {      \
     .Width = width,                         \
-    .Rows = {  }                            \
+    .Rows = { 0, 0, 0, 0, 0, 0, 0, 0 }      \
 }
     
 #define DEFINE_PGfxChar(width, r0, r1, r2, r3, r4, r5, r6, r7) {  \

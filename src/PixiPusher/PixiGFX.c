@@ -87,22 +87,23 @@ void _PG_DrawChar(PixiMatrix *matrix, PGfxCharacter ch, int cursorX, int cursorY
         {
             // The character will render on the screen at least a little
 
-            for (int x = 0; x < ch.Width; ++x)
+            for (int y = 0; y < 8; ++y)
             {
+                uint8_t row = ch.Rows[y];
+                uint8_t mask = 0x01 << (ch.Width - 1);
 
-                uint8_t row = ch.Rows[x];
-
-                for (int y = 0; y < 8; ++y)
+                for (int x = 0; x < ch.Width; ++x)
                 {
-
                     int px = cursorX + x;
                     int py = cursorY + y;
 
-                    if (px > 0 && px < matrix->Width &&
-                        py > 0 && py < matrix->Height)
+                    if (px >= 0 && px < matrix->Width &&
+                        py >= 0 && py < matrix->Height)
                     {
                         PG_SetPixel(matrix, px, py, (row & mask) ? foreColor : backColor);
                     }
+                    
+                    mask = mask >> 1;
                 }
             }
         }
