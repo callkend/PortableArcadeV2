@@ -54,6 +54,8 @@ extern "C" {
 
     void PG_DrawText(PixiMatrix *matrix, char *text, int cursorX, int cursorY, Color foreColor, Color backColor, const PGfxFont *font);
 
+    uint16_t PG_GetTextLength(char *text, const PGfxFont *font);
+
 #ifdef	__cplusplus
 }
 #endif

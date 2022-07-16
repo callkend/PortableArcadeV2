@@ -138,3 +138,18 @@ void PG_DrawText(PixiMatrix *matrix, char *text, int cursorX, int cursorY, Color
         }
     }
 }
+
+uint16_t PG_GetTextLength(char *text, const PGfxFont *font)
+{
+    uint16_t result = 0;
+    while (*text)
+    {
+        uint8_t c = (uint8_t)*text++;
+        if (c <= 128)
+        {
+            result += font->Characters[c].Width;
+        }
+    }
+    
+    return result;
+}
