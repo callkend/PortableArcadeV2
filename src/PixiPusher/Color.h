@@ -19,5 +19,6 @@ typedef struct {
 
 const static Color Black = { .R = 0, .G = 0, .B = 0, .A = 0xFF };
 const static Color LowestWhite = { .R = 1, .G = 1, .B = 1, .A = 0xFF };
+const static Color Transparent = { .R = 0, .G = 0, .B = 0, .A = 0 };
 
 #endif
