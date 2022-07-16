@@ -132,7 +132,9 @@ void PG_DrawText(PixiMatrix *matrix, char *text, int cursorX, int cursorY, Color
             PGfxCharacter ch = font->Characters[(uint8_t)c];
             _PG_DrawChar(matrix, ch, cursorX, cursorY, foreColor, backColor);
 
-            cursorX = cursorX + ch.Width + 1;
+            cursorX += ch.Width;
+            PG_DrawVerticalLine(matrix, cursorX, cursorY, cursorY + 8, backColor);
+            ++cursorX;
         }
     }
 }
