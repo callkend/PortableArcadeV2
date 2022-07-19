@@ -26,53 +26,57 @@
 
 #define PixelsPerChannel (PixelCount / NumberOfChannels)
 #define BytesPerChannel (PixelsPerChannel * PixelSize)
-    
-uint8_t LEDRAM[LEDBufferSize]; //Stores all LED data in on big array
 
-const int LEDSPNT1 = ((unsigned int)&LEDRAM + BytesPerChannel * 0);
-
-// Waveform Characteristics
-WS2812Settings pixelSettings = {    \
-    .ByteRate = 18,                 \
-    .BitWidth = 8,                  \
-    .ZeroWidth = 4,                 \
-    .LatchWidth = 0x1000            \
-};
+static PixiPixelSettings *setting;
 
 /**
  * Changes total width of a bit
  * @param bitWidth
  */
-void PP_SetBitWidth(unsigned char bitWidth){
-    pixelSettings.BitWidth = bitWidth;
+void PP_SetBitWidth(PixiPixelSettings *settings, unsigned char bitWidth){
+    settings->BitWidth = bitWidth;
     
     //Adjust the byte rate so that overruns don't happen
     unsigned char tempByte = (bitWidth << 1) + 2;
-    pixelSettings.ByteRate = tempByte < ByteRateMin ? ByteRateMin : tempByte;
+    settings->ByteRate = tempByte < ByteRateMin ? ByteRateMin : tempByte;
 }
 
 /**
  * Changes the zero bit width
  * @param zeroWidth
  */
-void PP_SetZeroWidth(unsigned char zeroWidth){
-    pixelSettings.ZeroWidth = ZeroWidthReg = zeroWidth;
+void PP_SetZeroWidth(PixiPixelSettings *settings, unsigned char zeroWidth){
+    settings->ZeroWidth = ZeroWidthReg = zeroWidth;
 }
 
 /**
  * Changes the period between frames
  * @param latchWidth
  */
-void PP_SetLatchWidth(unsigned int latchWidth){
-    pixelSettings.LatchWidth = latchWidth;
+void PP_SetLatchWidth(PixiPixelSettings *settings, unsigned int latchWidth){
+    settings->LatchWidth = latchWidth;
 }
-    
-void PP_Init(void)
+
+PixiPixelSettings PP_Init(uint8_t *array, uint16_t count)
 {
+    // Waveform Characteristics
+    WS2812Settings pixelSettings = {    \
+        .ByteRate = 18,                 \
+        .BitWidth = 8,                  \
+        .ZeroWidth = 4,                 \
+        .LatchWidth = 0x1000            \
+    };
+
+    PixiPixelSettings result = {
+        .Array = array,
+        .Count = count,
+        .Settings = pixelSettings,
+    };
+
     /****Init Memory****/
-    unsigned char *pnt = &LEDRAM[0];
+    uint8_t *pnt = array;
     
-    for (int i = 0; i < LEDBufferSize; i += 3)
+    for (int i = 0; i < count; i += 3)
     {
         *pnt++ = InitGreen;
         *pnt++ = InitRed;
@@ -112,11 +116,11 @@ void PP_Init(void)
 
     //Lock Registers
     __asm__ ("MOV    #OSCCON, w1 \n"
-        "MOV    #0x46, w2   \n"
-        "MOV    #0x57, w3   \n"
-        "MOV.b  w2, [w1]    \n"
-        "MOV.b  w3, [w1]    \n"
-        "BSET   OSCCON, #6");
+             "MOV    #0x46, w2   \n"
+             "MOV    #0x57, w3   \n"
+             "MOV.b  w2, [w1]    \n"
+             "MOV.b  w3, [w1]    \n"
+             "BSET   OSCCON, #6");
 
     /****SPI Setup****/
     //Reference Clock Setup
@@ -131,10 +135,10 @@ void PP_Init(void)
     /****PWM Setup****/
     //PWM 4 for the SPI clock source
     CCP4PRH = 0x0000; //Period Registers
-    CCP4PRL = pixelSettings.BitWidth;
+    CCP4PRL = result.Settings.BitWidth;
 
     CCP4RAH = 0x0000; //Pulse Width
-    CCP4RAL = pixelSettings.ZeroWidth;
+    CCP4RAL = result.Settings.ZeroWidth;
 
     CCP4CON3H = 0x0030; //Active high
 
@@ -172,8 +176,8 @@ void PP_Init(void)
     /***Output DMAs***/
     //DMA0
     DMADST0 = (unsigned int)&SPI4BUFL; //Setup destination pointer
-    DMASRC0 = LEDSPNT1;                //Setup source pointer
-    DMACNT0 = BytesPerChannel;         //Set up the counter for 1024 pixels
+    DMASRC0 = result.Array;                //Setup source pointer
+    DMACNT0 = result.Count * PixelSize;         //Set up the counter for 1024 pixels
 
     DMAINT0 = 0x6300; //Trigger Source = SCCP4
     DMACH0 = 0x0173;  //Enable Module, 8-Bit, One Shot
@@ -191,7 +195,7 @@ void PP_Service(void)
 {
 }
 
-void PP_UpdateDisplay(void)
+void PP_UpdateDisplay(PixiPixelSettings *settings)
 {
     DMACH0bits.CHEN = true; //Re Enable the Channel
 };

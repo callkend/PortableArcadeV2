@@ -34,6 +34,15 @@
         unsigned int LatchWidth;
     } WS2812Settings;
     
+    typedef struct
+    {
+        uint8_t *Array;
+
+        uint16_t Count;
+
+        WS2812Settings Settings;
+    } PixiPixelSettings;
+
     /****Program Declarations********************************/
 
     /**
