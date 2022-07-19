@@ -72,10 +72,11 @@ int main(void)
     extern uint8_t LEDRAM[];
     extern const PGfxFont Font1;
 
+    char text[] = { 0, 0, 0, 0, 0 };
+
+
     PixiMatrix matrix = PM_Init(16, 16, LEDRAM, PixelMap);
     Color c = { .R = 8, .G = 2, .B = 0, .A = 0xFF };
-
-    PM_SetPixel(&matrix, 1, 1, c);
 
     while (1)
     {
@@ -97,9 +98,13 @@ int main(void)
             readCount = getsUSBUSART(readBuf, CDC_DATA_OUT_EP_SIZE);
 
             if (readCount > 0)
-            { 
-                PG_FillRectangle(&matrix, 0, 6, 8, 14, LowestWhite);
-                PG_DrawChar(&matrix, readBuf[0], 0, 6, c, Black, &Font1);
+            {
+                text[3] = text[2];
+                text[2] = text[1];
+                text[1] = text[0];
+                text[0] = readBuf[0];
+                
+                PG_DrawText(&matrix, text, 0, 0, c, LowestWhite, &Font1);
             }
         }
 
