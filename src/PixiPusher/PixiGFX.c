@@ -157,3 +157,46 @@ uint16_t PG_GetTextLength(char *text, const PGfxFont *font)
     
     return result;
 }
+
+int PG_DrawNumber(PixiMatrix *matrix, int16_t number, int cursorX, int cursorY, Color foreColor, Color backColor, const PGfxFont *font)
+{
+    const uint16_t decades[] = { 10000, 1000, 100, 10, 1, 0 };
+
+    PGfxCharacter ch; 
+    if (number == 0) {
+        ch = font->Characters[(uint8_t)'0'];
+        _PG_DrawChar(matrix, ch, cursorX, cursorY, foreColor, backColor);
+        return;
+
+    } else if (number < 0) {
+        ch = font->Characters[(uint8_t)'-'];
+        _PG_DrawChar(matrix, ch, cursorX, cursorY, foreColor, backColor);
+        cursorX += (ch.Width + 1);
+
+        number *= -1;
+    }
+
+    const uint16_t *d = decades;
+    // Fast forward to the correct multiple of 10
+    while (number < *d) {
+        ++d;
+    }
+
+    while (*d) {
+
+        uint8_t digit = 0;
+
+        while (number >= *d){
+            number -= *d;
+            ++digit;
+        }
+
+        ch = font->Characters[digit + '0'];
+        _PG_DrawChar(matrix, ch, cursorX, cursorY, foreColor, backColor);
+        cursorX += (ch.Width + 1);
+        
+        ++d;
+    }
+
+    return cursorX;
+}
