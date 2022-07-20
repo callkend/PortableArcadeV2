@@ -1,4 +1,7 @@
 
+#include <stdbool.h>
+#include <stdint.h>
+
 #include "Color.h"
 #include "PixiMatrix.h"
 #include "PixiGFX.h"
@@ -75,7 +78,7 @@ void PG_FillRectangle(PixiMatrix *matrix, uint16_t sx, uint16_t sy, uint16_t ex,
     }
 }
 
-void _PG_DrawChar(PixiMatrix *matrix, PGfxCharacter ch, int cursorX, int cursorY, Color foreColor, Color backColor)
+int _PG_DrawChar(PixiMatrix *matrix, PGfxCharacter ch, int cursorX, int cursorY, Color foreColor, Color backColor, bool addCharSpace)
 {
 
     // Make sure the character has a render
@@ -107,7 +110,15 @@ void _PG_DrawChar(PixiMatrix *matrix, PGfxCharacter ch, int cursorX, int cursorY
                 }
             }
         }
+
+        cursorX += ch.Width;
+        if (addCharSpace){
+            PG_DrawVerticalLine(matrix, cursorX, cursorY, cursorY + 8, backColor);
+            ++cursorX;
+        }
     }
+
+    return cursorX;
 }
 
 int PG_DrawChar(PixiMatrix *matrix, char c, int cursorX, int cursorY, Color foreColor, Color backColor, const PGfxFont *font)
@@ -116,8 +127,7 @@ int PG_DrawChar(PixiMatrix *matrix, char c, int cursorX, int cursorY, Color fore
     if (c <= 128)
     {
         PGfxCharacter ch = font->Characters[(uint8_t)c];
-        _PG_DrawChar(matrix, ch, cursorX, cursorY, foreColor, backColor);
-        cursorX += (ch.Width + 1);
+        _PG_DrawChar(matrix, ch, cursorX, cursorY, foreColor, backColor, true);
     }
 
     return cursorX;    
@@ -125,18 +135,13 @@ int PG_DrawChar(PixiMatrix *matrix, char c, int cursorX, int cursorY, Color fore
 
 int PG_DrawText(PixiMatrix *matrix, char *text, int cursorX, int cursorY, Color foreColor, Color backColor, const PGfxFont *font)
 {
-
     while (*text)
     {
         char c = *text++;
         if (c <= 128)
         {
             PGfxCharacter ch = font->Characters[(uint8_t)c];
-            _PG_DrawChar(matrix, ch, cursorX, cursorY, foreColor, backColor);
-
-            cursorX += ch.Width;
-            PG_DrawVerticalLine(matrix, cursorX, cursorY, cursorY + 8, backColor);
-            ++cursorX;
+            cursorX = _PG_DrawChar(matrix, ch, cursorX, cursorY, foreColor, backColor, true);
         }
     }
 
@@ -165,15 +170,11 @@ int PG_DrawNumber(PixiMatrix *matrix, int16_t number, int cursorX, int cursorY, 
     PGfxCharacter ch; 
     if (number == 0) {
         ch = font->Characters[(uint8_t)'0'];
-        _PG_DrawChar(matrix, ch, cursorX, cursorY, foreColor, backColor);
-        return;
+        return _PG_DrawChar(matrix, ch, cursorX, cursorY, foreColor, backColor, true);
 
     } else if (number < 0) {
         ch = font->Characters[(uint8_t)'-'];
-        _PG_DrawChar(matrix, ch, cursorX, cursorY, foreColor, backColor);
-        cursorX += (ch.Width + 1);
-
-        number *= -1;
+        cursorX = _PG_DrawChar(matrix, ch, cursorX, cursorY, foreColor, backColor, true);
     }
 
     const uint16_t *d = decades;
@@ -192,9 +193,8 @@ int PG_DrawNumber(PixiMatrix *matrix, int16_t number, int cursorX, int cursorY, 
         }
 
         ch = font->Characters[digit + '0'];
-        _PG_DrawChar(matrix, ch, cursorX, cursorY, foreColor, backColor);
-        cursorX += (ch.Width + 1);
-        
+        cursorX = _PG_DrawChar(matrix, ch, cursorX, cursorY, foreColor, backColor, true);
+
         ++d;
     }
 
