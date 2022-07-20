@@ -110,18 +110,20 @@ void _PG_DrawChar(PixiMatrix *matrix, PGfxCharacter ch, int cursorX, int cursorY
     }
 }
 
-void PG_DrawChar(PixiMatrix *matrix, char c, int cursorX, int cursorY, Color foreColor, Color backColor, const PGfxFont *font)
+int PG_DrawChar(PixiMatrix *matrix, char c, int cursorX, int cursorY, Color foreColor, Color backColor, const PGfxFont *font)
 {
-
     // Make sure the character is in the ASCII space
     if (c <= 128)
     {
         PGfxCharacter ch = font->Characters[(uint8_t)c];
         _PG_DrawChar(matrix, ch, cursorX, cursorY, foreColor, backColor);
+        cursorX += (ch.Width + 1);
     }
+
+    return cursorX;    
 }
 
-void PG_DrawText(PixiMatrix *matrix, char *text, int cursorX, int cursorY, Color foreColor, Color backColor, const PGfxFont *font)
+int PG_DrawText(PixiMatrix *matrix, char *text, int cursorX, int cursorY, Color foreColor, Color backColor, const PGfxFont *font)
 {
 
     while (*text)
@@ -137,6 +139,8 @@ void PG_DrawText(PixiMatrix *matrix, char *text, int cursorX, int cursorY, Color
             ++cursorX;
         }
     }
+
+    return cursorX;
 }
 
 uint16_t PG_GetTextLength(char *text, const PGfxFont *font)

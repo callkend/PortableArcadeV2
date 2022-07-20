@@ -50,9 +50,9 @@ extern "C" {
 
     void PG_FillRectangle(PixiMatrix* matrix, uint16_t sx, uint16_t sy, uint16_t ex, uint16_t ey, Color c);
 
-    void PG_DrawChar(PixiMatrix *matrix, char c, int cursorX, int cursorY, Color foreColor, Color backColor, const PGfxFont *font);
+    int PG_DrawChar(PixiMatrix *matrix, char c, int cursorX, int cursorY, Color foreColor, Color backColor, const PGfxFont *font);
 
-    void PG_DrawText(PixiMatrix *matrix, char *text, int cursorX, int cursorY, Color foreColor, Color backColor, const PGfxFont *font);
+    int PG_DrawText(PixiMatrix *matrix, char *text, int cursorX, int cursorY, Color foreColor, Color backColor, const PGfxFont *font);
 
     uint16_t PG_GetTextLength(char *text, const PGfxFont *font);
 
