@@ -17,15 +17,11 @@
 
 #include "PixiPixel.h"
 #include "PP_Config.h"
+#include "Color.h"
 
 /********************************************************/
 
 #define ByteRateMin 0x0010
-
-#define NumberOfChannels (1)
-
-#define PixelsPerChannel (PixelCount / NumberOfChannels)
-#define BytesPerChannel (PixelsPerChannel * PixelSize)
 
 static PixiPixelSettings *setting;
 
@@ -57,7 +53,7 @@ void PP_SetLatchWidth(PixiPixelSettings *settings, unsigned int latchWidth){
     settings->LatchWidth = latchWidth;
 }
 
-PixiPixelSettings PP_Init(uint8_t *array, uint16_t count)
+PixiPixelSettings PP_Init(uint16_t count, Color initialColor)
 {
     // Waveform Characteristics
     WS2812Settings pixelSettings = {    \
@@ -67,21 +63,18 @@ PixiPixelSettings PP_Init(uint8_t *array, uint16_t count)
         .LatchWidth = 0x1000            \
     };
 
+    uint8_t pixelArray[count * PixelSize];
+
     PixiPixelSettings result = {
         .Array = array,
         .Count = count,
         .Settings = pixelSettings,
+        .Channel = channel,
+        .AutoUpdate = true,
     };
 
     /****Init Memory****/
-    uint8_t *pnt = array;
-    
-    for (int i = 0; i < count; i += 3)
-    {
-        *pnt++ = InitGreen;
-        *pnt++ = InitRed;
-        *pnt++ = InitBlue;
-    }
+    PP_Fill(result, initialColor);
 
     /****Port Setup****/
     ANSB = 0x10C8;  //Analog setup
@@ -181,9 +174,11 @@ PixiPixelSettings PP_Init(uint8_t *array, uint16_t count)
     /****Interrupt Setup*****/
     IFS0bits.DMA0IF = 0; //DMA Interrupt
     IEC0bits.DMA0IE = 1;
+
+    return result;
 }
 
-void PP_Service(void)
+void PP_Service(PixiPixelSettings *settings)
 {
 }
 
@@ -191,6 +186,18 @@ void PP_UpdateDisplay(PixiPixelSettings *settings)
 {
     DMACH0bits.CHEN = true; //Re Enable the Channel
 };
+
+void PP_Fill(PixiPixelSettings *settings, Color c)
+{
+    uint8_t *pnt = settings->Array;
+    
+    for (int i = 0; i < setting->Count; i += 3)
+    {
+        *pnt++ = c.G;
+        *pnt++ = c.R;
+        *pnt++ = c.B;
+    }
+}
 
 void __attribute__((interrupt, no_auto_psv)) _DMA0Interrupt()
 {
@@ -200,8 +207,8 @@ void __attribute__((interrupt, no_auto_psv)) _DMA0Interrupt()
         DMAINT0bits.DONEIF = false; //Clear the DONEIF
 
         DMACH0bits.CHEN = false;   //Disable channel
-        DMASRC0 = LEDSPNT1;        //Setup source pointer
-        DMACNT0 = BytesPerChannel; //Set up the counter for 1024 pixels
+        DMASRC0 = setting->Array;  //Setup source pointer
+        DMACNT0 = setting->Count * PixelSize; //Set up the counter
 
         LatchWidthReg = pixelSettings.LatchWidth; //Should create an interrupt every 16mS
         IFS0bits.T1IF = false;      //Timer 1 Setup

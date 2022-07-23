@@ -15,9 +15,10 @@
 #define	PIXI_PUSHER_H
     
     #include "PP_Config.h"
+    #include <stdbool.h>
     #include <stdint.h>
 
-    extern uint8_t LEDRAM[LEDBufferSize];
+    #define PixelSize (3)
 
     typedef struct
     {
@@ -41,6 +42,11 @@
         uint16_t Count;
 
         WS2812Settings Settings;
+
+        uint8_t Channel;
+
+        bool AutoUpdate;
+
     } PixiPixelSettings;
 
     /****Program Declarations********************************/
@@ -48,12 +54,12 @@
     /**
      * Initializes the PixiPusher Routines and starts transmitting the screen
      */
-    void PP_Init(void);
+    PixiPixelSettings PP_Init(void);
 
     /**
      * Called periodically from main to keep the screen alive
      */
-    void PP_Service(void);
+    void PP_Service(PixiPixelSettings *settings);
 
     
     // Waveform Characteristics    
@@ -61,19 +67,19 @@
      * Changes total width of a bit
      * @param bitWidth
      */
-    void PP_SetBitWidth(unsigned char bitWidth);
+    void PP_SetBitWidth(PixiPixelSettings *settings, unsigned char bitWidth);
     
     /**
      * Changes the zero bit width
      * @param zeroWidth
      */
-    void PP_SetZeroWidth(unsigned char zeroWidth);
+    void PP_SetZeroWidth(PixiPixelSettings *settings, unsigned char zeroWidth);
     
     /**
      * Changes the period between frames
      * @param latchWidth
      */
-    void PP_SetLatchWidth(unsigned int latchWidth);
+    void PP_SetLatchWidth(PixiPixelSettings *settings, unsigned int latchWidth);
     
     /****End Program Declarations****************************/
 
