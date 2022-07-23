@@ -230,7 +230,10 @@ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt()
     IEC0bits.T1IE = false;
     IFS0bits.T1IF = false; //Lower the flag
 
-    PP_UpdateDisplay(pixelSettings);
+    if (pixelSettings->AutoUpdate)
+    {
+        PP_UpdateDisplay(pixelSettings);
+    }
     
     ByteRateReg = pixelSettings->Settings.ByteRate; //Setup to clock data into DMA
 }
