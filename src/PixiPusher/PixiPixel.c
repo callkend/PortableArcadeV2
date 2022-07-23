@@ -23,58 +23,58 @@
 
 #define ByteRateMin 0x0010
 
-static PixiPixelSettings *setting;
+volatile PixiPixelSettings* pixelSettings;
 
 /**
  * Changes total width of a bit
  * @param bitWidth
  */
-void PP_SetBitWidth(PixiPixelSettings *settings, unsigned char bitWidth){
-    settings->BitWidth = bitWidth;
+void PP_SetBitWidth(PixiPixelSettings* settings, unsigned char bitWidth){
+    settings->Settings.BitWidth = bitWidth;
     
     //Adjust the byte rate so that overruns don't happen
     unsigned char tempByte = (bitWidth << 1) + 2;
-    settings->ByteRate = tempByte < ByteRateMin ? ByteRateMin : tempByte;
+    settings->Settings.ByteRate = tempByte < ByteRateMin ? ByteRateMin : tempByte;
 }
 
 /**
  * Changes the zero bit width
  * @param zeroWidth
  */
-void PP_SetZeroWidth(PixiPixelSettings *settings, unsigned char zeroWidth){
-    settings->ZeroWidth = ZeroWidthReg = zeroWidth;
+void PP_SetZeroWidth(PixiPixelSettings* settings, unsigned char zeroWidth){
+    settings->Settings.ZeroWidth = ZeroWidthReg = zeroWidth;
 }
 
 /**
  * Changes the period between frames
  * @param latchWidth
  */
-void PP_SetLatchWidth(PixiPixelSettings *settings, unsigned int latchWidth){
-    settings->LatchWidth = latchWidth;
+void PP_SetLatchWidth(PixiPixelSettings* settings, unsigned int latchWidth){
+    settings->Settings.LatchWidth = latchWidth;
 }
 
 PixiPixelSettings PP_Init(uint16_t count, Color initialColor)
 {
     // Waveform Characteristics
-    WS2812Settings pixelSettings = {    \
+    WS2812Settings ledSettings = {      \
         .ByteRate = 18,                 \
         .BitWidth = 8,                  \
         .ZeroWidth = 4,                 \
         .LatchWidth = 0x1000            \
     };
 
-    uint8_t pixelArray[count * PixelSize];
+    uint8_t* pixelArray = malloc(count * PixelSize);
 
-    PixiPixelSettings result = {
-        .Array = array,
-        .Count = count,
-        .Settings = pixelSettings,
-        .Channel = channel,
-        .AutoUpdate = true,
+    PixiPixelSettings result = {        \
+        .Array = pixelArray,            \
+        .Count = count,                 \
+        .Settings = ledSettings,        \
+        .Channel = 4,                   \
+        .AutoUpdate = true,             \
     };
 
     /****Init Memory****/
-    PP_Fill(result, initialColor);
+    PP_Fill(&result, initialColor);
 
     /****Port Setup****/
     ANSB = 0x10C8;  //Analog setup
@@ -161,7 +161,7 @@ PixiPixelSettings PP_Init(uint16_t count, Color initialColor)
     /***Output DMAs***/
     //DMA0
     DMADST0 = (unsigned int)&SPI4BUFL; //Setup destination pointer
-    DMASRC0 = result.Array;                //Setup source pointer
+    DMASRC0 = (uint16_t)result.Array;                //Setup source pointer
     DMACNT0 = result.Count * PixelSize;         //Set up the counter for 1024 pixels
 
     DMAINT0 = 0x6300; //Trigger Source = SCCP4
@@ -175,6 +175,7 @@ PixiPixelSettings PP_Init(uint16_t count, Color initialColor)
     IFS0bits.DMA0IF = 0; //DMA Interrupt
     IEC0bits.DMA0IE = 1;
 
+    pixelSettings = &result;
     return result;
 }
 
@@ -191,7 +192,7 @@ void PP_Fill(PixiPixelSettings *settings, Color c)
 {
     uint8_t *pnt = settings->Array;
     
-    for (int i = 0; i < setting->Count; i += 3)
+    for (int i = 0; i < settings->Count; i += 3)
     {
         *pnt++ = c.G;
         *pnt++ = c.R;
@@ -207,10 +208,10 @@ void __attribute__((interrupt, no_auto_psv)) _DMA0Interrupt()
         DMAINT0bits.DONEIF = false; //Clear the DONEIF
 
         DMACH0bits.CHEN = false;   //Disable channel
-        DMASRC0 = setting->Array;  //Setup source pointer
-        DMACNT0 = setting->Count * PixelSize; //Set up the counter
+        DMASRC0 = (uint16_t)pixelSettings->Array;  //Setup source pointer
+        DMACNT0 = pixelSettings->Count * PixelSize; //Set up the counter
 
-        LatchWidthReg = pixelSettings.LatchWidth; //Should create an interrupt every 16mS
+        LatchWidthReg = pixelSettings->Settings.LatchWidth; //Should create an interrupt every 16mS
         IFS0bits.T1IF = false;      //Timer 1 Setup
         IEC0bits.T1IE = true;
     }
@@ -229,7 +230,7 @@ void __attribute__((interrupt, no_auto_psv)) _T1Interrupt()
     IEC0bits.T1IE = false;
     IFS0bits.T1IF = false; //Lower the flag
 
-    PP_UpdateDisplay();
+    PP_UpdateDisplay(pixelSettings);
     
-    ByteRateReg = pixelSettings.ByteRate; //Setup to clock data into DMA
+    ByteRateReg = pixelSettings->Settings.ByteRate; //Setup to clock data into DMA
 }

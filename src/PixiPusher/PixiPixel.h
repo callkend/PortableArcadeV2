@@ -15,6 +15,7 @@
 #define	PIXI_PUSHER_H
     
     #include "PP_Config.h"
+    #include "Color.h"
     #include <stdbool.h>
     #include <stdint.h>
 
@@ -54,7 +55,7 @@
     /**
      * Initializes the PixiPusher Routines and starts transmitting the screen
      */
-    PixiPixelSettings PP_Init(void);
+    PixiPixelSettings PP_Init(uint16_t count, Color initialColor);
 
     /**
      * Called periodically from main to keep the screen alive
@@ -80,6 +81,8 @@
      * @param latchWidth
      */
     void PP_SetLatchWidth(PixiPixelSettings *settings, unsigned int latchWidth);
+    
+    void PP_Fill(PixiPixelSettings *settings, Color c);
     
     /****End Program Declarations****************************/
 

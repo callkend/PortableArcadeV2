@@ -64,18 +64,17 @@ int main(void)
     // initialize the device
     SYSTEM_Initialize();
     
-    PP_Init();
+    PixiPixelSettings ppSettings = PP_Init(768, LowestWhite);
     
     Setup();
 
     extern uint16_t PixelMap[];
-    extern uint8_t LEDRAM[];
     extern const PGfxFont Font1;
 
     char text[] = { 0, 0, 0, 0, 0 };
 
 
-    PixiMatrix matrix = PM_Init(16, 16, LEDRAM, PixelMap);
+    PixiMatrix matrix = PM_Init(16, 16, ppSettings.Array, PixelMap);
     Color c = { .R = 8, .G = 2, .B = 0, .A = 0xFF };
 
     while (1)
