@@ -442,77 +442,29 @@ void _PP_StartLatchTime()
     IEC0bits.T1IE = true;
 }
 
-void __attribute__((interrupt, no_auto_psv)) _DMA0Interrupt() {
-    IFS0bits.DMA0IF = false; //Clear the flag
-    if (DMAINT0bits.DONEIF) {
-        DMAINT0bits.DONEIF = false; //Clear the DONEIF
-
-        DMACH0bits.CHEN = false; //Disable channel
-
-        _PP_StartLatchTime();
-        _PP_PrepareChannelsForUpdate();
-    }
-    if (DMAINT0bits.HALFIF) {
-        DMAINT0bits.HALFIF = false;
-    }
-    if (DMAINT0bits.OVRUNIF) {
-        DMAINT0bits.OVRUNIF = false;
-    }
+#define PP_DMA_INTERRUPT(intName, ifsFlag, intRegister, chRegister)     \
+void __attribute__((interrupt, no_auto_psv)) intName() {                \
+    ifsFlag = false;                                                    \
+    if (intRegister.DONEIF) {                                           \
+        intRegister.DONEIF = false;                                     \
+                                                                        \
+        chRegister.CHEN = false;                                        \
+                                                                        \
+        _PP_StartLatchTime();                                           \
+        _PP_PrepareChannelsForUpdate();                                 \
+    }                                                                   \
+    if (intRegister.HALFIF) {                                           \
+        intRegister.HALFIF = false;                                     \
+    }                                                                   \
+    if (intRegister.OVRUNIF) {                                          \
+        intRegister.OVRUNIF = false;                                    \
+    }                                                                   \
 }
 
-void __attribute__((interrupt, no_auto_psv)) _DMA1Interrupt() {
-    IFS0bits.DMA1IF = false; //Clear the flag
-    if (DMAINT1bits.DONEIF) {
-        DMAINT1bits.DONEIF = false; //Clear the DONEIF
-
-        DMACH1bits.CHEN = false; //Disable channel
-
-        _PP_StartLatchTime();
-        _PP_PrepareChannelsForUpdate();
-    }
-    if (DMAINT1bits.HALFIF) {
-        DMAINT1bits.HALFIF = false;
-    }
-    if (DMAINT1bits.OVRUNIF) {
-        DMAINT1bits.OVRUNIF = false;
-    }
-}
-
-void __attribute__((interrupt, no_auto_psv)) _DMA2Interrupt() {
-    IFS1bits.DMA2IF = false; //Clear the flag
-    if (DMAINT2bits.DONEIF) {
-        DMAINT2bits.DONEIF = false; //Clear the DONEIF
-
-        DMACH2bits.CHEN = false; //Disable channel
-
-        _PP_StartLatchTime();
-        _PP_PrepareChannelsForUpdate();
-    }
-    if (DMAINT2bits.HALFIF) {
-        DMAINT2bits.HALFIF = false;
-    }
-    if (DMAINT2bits.OVRUNIF) {
-        DMAINT2bits.OVRUNIF = false;
-    }
-}
-
-void __attribute__((interrupt, no_auto_psv)) _DMA3Interrupt() {
-    IFS2bits.DMA3IF = false; //Clear the flag
-    if (DMAINT3bits.DONEIF) {
-        DMAINT3bits.DONEIF = false; //Clear the DONEIF
-
-        DMACH3bits.CHEN = false; //Disable channel
-
-        _PP_StartLatchTime();
-        _PP_PrepareChannelsForUpdate();
-    }
-    if (DMAINT3bits.HALFIF) {
-        DMAINT3bits.HALFIF = false;
-    }
-    if (DMAINT3bits.OVRUNIF) {
-        DMAINT3bits.OVRUNIF = false;
-    }
-}
+PP_DMA_INTERRUPT(_DMA0Interrupt, IFS0bits.DMA0IF, DMAINT0bits, DMACH0bits)
+PP_DMA_INTERRUPT(_DMA1Interrupt, IFS0bits.DMA1IF, DMAINT1bits, DMACH1bits)
+PP_DMA_INTERRUPT(_DMA2Interrupt, IFS1bits.DMA2IF, DMAINT2bits, DMACH2bits)
+PP_DMA_INTERRUPT(_DMA3Interrupt, IFS2bits.DMA3IF, DMAINT3bits, DMACH3bits)
 
 void _PP_PrepareChannelsForUpdate()
 {
