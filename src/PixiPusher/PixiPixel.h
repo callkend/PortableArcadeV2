@@ -83,7 +83,11 @@
     void PP_SetLatchWidth(PixiPixelSettings *settings, unsigned int latchWidth);
     
     void PP_Fill(PixiPixelSettings *settings, Color c);
-    
+
+    Color PP_GetPixel(PixiPixelSettings *settings, uint16_t l);
+
+    void PP_SetPixel(PixiPixelSettings *settings, uint16_t l, Color c);
+
     /****End Program Declarations****************************/
 
 #endif

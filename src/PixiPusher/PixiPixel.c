@@ -188,11 +188,49 @@ void PP_UpdateDisplay(PixiPixelSettings *settings)
     DMACH0bits.CHEN = true; //Re Enable the Channel
 };
 
+void PP_SetPixel(PixiPixelSettings *settings, uint16_t l, Color c)
+{
+    // Only change a value if in safe space
+    if (l < settings->Count)
+    {
+        uint8_t *pnt = settings->Array;
+
+        pnt += (l * PixelSize);
+
+        *pnt++ = c.G;
+        *pnt++ = c.R;
+        *pnt++ = c.B;
+    }
+}
+
+Color PP_GetPixel(PixiPixelSettings *settings, uint16_t l)
+{
+    // Only change a value if in safe space
+    if (l < settings->Count)
+    {
+        uint8_t *pnt = settings->Array;
+
+        pnt += (l * PixelSize);
+
+        Color result = {
+            .G = *pnt++,
+            .R = *pnt++,
+            .B = *pnt++,
+        };
+
+        return result;
+    }
+    else
+    {
+        return Black;
+    }
+}
+
 void PP_Fill(PixiPixelSettings *settings, Color c)
 {
     uint8_t *pnt = settings->Array;
     
-    for (int i = 0; i < settings->Count; i += 3)
+    for (int i = 0; i < settings->Count; i += PixelSize)
     {
         *pnt++ = c.G;
         *pnt++ = c.R;
