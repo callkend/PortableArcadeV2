@@ -34,6 +34,12 @@
         
         /** Changes the period between frames */
         unsigned int LatchWidth;
+
+        /** Indicates if the screen updates asynchronously **/
+        bool AutoUpdate;
+
+        /** Indicates if the screen is currently updating **/
+        bool Updating;
     } WS2812Settings;
     
     typedef struct
@@ -42,52 +48,57 @@
 
         uint16_t Count;
 
-        WS2812Settings Settings;
-
         uint8_t Channel;
 
-        bool AutoUpdate;
-
-    } PixiPixelSettings;
+    } PixiChannelSettings;
 
     /****Program Declarations********************************/
-
-    /**
-     * Initializes the PixiPusher Routines and starts transmitting the screen
-     */
-    PixiPixelSettings PP_Init(uint16_t count, Color initialColor);
-
-    /**
-     * Called periodically from main to keep the screen alive
-     */
-    void PP_Service(PixiPixelSettings *settings);
-
     
     // Waveform Characteristics    
     /**
      * Changes total width of a bit
      * @param bitWidth
      */
-    void PP_SetBitWidth(PixiPixelSettings *settings, unsigned char bitWidth);
+    void PP_SetBitWidth(WS2812Settings *settings, unsigned char bitWidth);
     
     /**
      * Changes the zero bit width
      * @param zeroWidth
      */
-    void PP_SetZeroWidth(PixiPixelSettings *settings, unsigned char zeroWidth);
+    void PP_SetZeroWidth(WS2812Settings *settings, unsigned char zeroWidth);
     
     /**
      * Changes the period between frames
      * @param latchWidth
      */
-    void PP_SetLatchWidth(PixiPixelSettings *settings, unsigned int latchWidth);
+    void PP_SetLatchWidth(WS2812Settings *settings, unsigned int latchWidth);
     
-    void PP_Fill(PixiPixelSettings *settings, Color c);
+   
 
-    Color PP_GetPixel(PixiPixelSettings *settings, uint16_t l);
+    /**
+     * Initializes the PixiPusher Routines and starts transmitting the screen
+     */
+    void PP_Init();
 
-    void PP_SetPixel(PixiPixelSettings *settings, uint16_t l, Color c);
+    void PP_InitChannel(uint8_t channel, uint8_t *array, uint16_t count, Color initialColor);
+    
+    /**
+     * Called periodically from main to keep the screen alive
+     */
+    void PP_Service();
 
+    void PP_DisplayUpdate();
+    
+    void PP_DisplayUpdateStart();
+    
+    void PP_WaitForDisplayUpdateFinished();
+    
+    void PP_Fill(Color c);
+
+    Color PP_GetPixel(uint8_t *pnt, uint16_t pixelIndex);
+
+    void PP_SetPixel(uint8_t *pnt, uint16_t pixelIndex, Color c);
+    
     /****End Program Declarations****************************/
 
 #endif

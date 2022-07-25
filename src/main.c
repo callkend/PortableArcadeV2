@@ -56,6 +56,10 @@
 #include "PixiPusher/Color.h"
 #include "PixiPusher/setup.h"
 
+#define LEDCount (768)
+
+uint8_t DisplayArray[LEDCount];
+
 /*
                          Main application
  */
@@ -64,7 +68,8 @@ int main(void)
     // initialize the device
     SYSTEM_Initialize();
     
-    PixiPixelSettings ppSettings = PP_Init(768, LowestWhite);
+    PP_Init();
+    PP_InitChannel(4, DisplayArray, LEDCount, LowestWhite);
     
     Setup();
 
@@ -74,7 +79,7 @@ int main(void)
     char text[] = { 0, 0, 0, 0, 0 };
 
 
-    PixiMatrix matrix = PM_Init(16, 16, ppSettings.Array, PixelMap);
+    PixiMatrix matrix = PM_Init(16, 16, DisplayArray, PixelMap);
     Color c = { .R = 8, .G = 2, .B = 0, .A = 0xFF };
 
     while (1)
