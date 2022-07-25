@@ -1,5 +1,6 @@
 
 #include <stdint.h>
+#include "PixiPixel.h"
 #include "PixiMatrix.h"
 
 PixiMatrix PM_Init(uint16_t width, uint16_t height, uint8_t *pixelArray, const uint16_t *matrixMap) {
@@ -19,7 +20,7 @@ uint8_t* PM_GetLinerLocation(PixiMatrix* matrix, uint16_t x, uint16_t y) {
     if (x < matrix->Width && y < matrix->Height)
     {
         uint16_t linerLocation = y * matrix->Width + x;
-        return &matrix->PixelArray[(matrix->MatrixMap[linerLocation] * 3)];
+        return &matrix->PixelArray[(matrix->MatrixMap[linerLocation] * PixelSize)];
     }
     else
     {
