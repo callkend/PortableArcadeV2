@@ -8,6 +8,10 @@
 #ifndef PP_CONFIG_H
 #define	PP_CONFIG_H
 
+#ifdef	__cplusplus
+{
+#endif
+
 #define BitWidthReg CCP4PRL
 #define ZeroWidthReg CCP4RAL
 #define LatchWidthReg PR1
