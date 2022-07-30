@@ -186,10 +186,11 @@ void PP_InitChannel(uint8_t channel, uint8_t *array, uint16_t count, Color initi
             DMACH0 = DMACHx; //Enable Module, 8-Bit, One Shot
             break;
 
-        case 2:
+        case 3:
             // Port
             TRISDbits.TRISD0 = 0; // Channel Output
             ANSDbits.ANSD0 = 0;
+            RPOR1bits.RP3R = _RPOUT_CLC2OUT;   //CLC2OUT to RP3
 
             TRISBbits.TRISB5 = 0; // Channel Clock Out
             ANSBbits.ANSB5 = 0;
@@ -219,11 +220,10 @@ void PP_InitChannel(uint8_t channel, uint8_t *array, uint16_t count, Color initi
 
             break;
 
-        case 3:
+        case 2:
             // Port
             TRISDbits.TRISD10 = 0; // Channel Output
             ANSDbits.ANSD10 = 0;
-            RPOR1bits.RP3R = _RPOUT_CLC2OUT; //CLC2OUT to RP3
 
             TRISBbits.TRISB2 = 0; // Channel clock out
             ANSBbits.ANSB2 = 0;
@@ -356,10 +356,10 @@ void PP_DisplayUpdateStart() {
     if (channelSettings[0].Channel){
         DMACH0bits.CHEN = true; //Re Enable the Channel
     }
-    if (channelSettings[1].Channel){
+    if (channelSettings[2].Channel){
         DMACH1bits.CHEN = true; //Re Enable the Channel
     }
-    if (channelSettings[2].Channel){
+    if (channelSettings[1].Channel){
         DMACH2bits.CHEN = true; //Re Enable the Channel
     }
     if (channelSettings[3].Channel){
@@ -389,12 +389,12 @@ void PP_DisplayUpdateStart() {
             IEC0bits.DMA0IE = 1;
             break;
 
-        case 2:
+        case 3:
             IFS0bits.DMA1IF = 0; //DMA Interrupt
             IEC0bits.DMA1IE = 1;
             break;
 
-        case 3:
+        case 2:
             IFS1bits.DMA2IF = 0; //DMA Interrupt
             IEC1bits.DMA2IE = 1;
             break;
@@ -421,12 +421,12 @@ void _PP_PrepareChannelForUpdate(PixiChannelSettings *settings)
             DMACNT0 = settings->Count * PixelSize; //Set up the counter
             break;
 
-        case 2:
+        case 3:
             DMASRC1 = (uint16_t) settings->Array; //Setup source pointer
             DMACNT1 = settings->Count * PixelSize; //Set up the counter
             break;
 
-        case 3:
+        case 2:
             DMASRC2 = (uint16_t) settings->Array; //Setup source pointer
             DMACNT2 = settings->Count * PixelSize; //Set up the counter
             break;
