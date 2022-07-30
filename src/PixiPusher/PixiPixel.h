@@ -59,19 +59,19 @@
      * Changes total width of a bit
      * @param bitWidth
      */
-    void PP_SetBitWidth(WS2812Settings *settings, unsigned char bitWidth);
+    void PP_SetBitWidth(unsigned char bitWidth);
     
     /**
      * Changes the zero bit width
      * @param zeroWidth
      */
-    void PP_SetZeroWidth(WS2812Settings *settings, unsigned char zeroWidth);
+    void PP_SetZeroWidth(unsigned char zeroWidth);
     
     /**
      * Changes the period between frames
      * @param latchWidth
      */
-    void PP_SetLatchWidth(WS2812Settings *settings, unsigned int latchWidth);
+    void PP_SetLatchWidth(unsigned int latchWidth);
     
    
 

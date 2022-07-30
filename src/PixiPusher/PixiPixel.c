@@ -38,28 +38,28 @@ volatile WS2812Settings pixelSettings = {       \
  * Changes total width of a bit
  * @param bitWidth
  */
-void PP_SetBitWidth(WS2812Settings* settings, unsigned char bitWidth) {
-    settings->BitWidth = bitWidth;
+void PP_SetBitWidth(unsigned char bitWidth) {
+    pixelSettings.BitWidth = bitWidth;
 
     //Adjust the byte rate so that overruns don't happen
     unsigned char tempByte = (bitWidth << 1) + 2;
-    settings->ByteRate = tempByte < ByteRateMin ? ByteRateMin : tempByte;
+    pixelSettings.ByteRate = tempByte < ByteRateMin ? ByteRateMin : tempByte;
 }
 
 /**
  * Changes the zero bit width
  * @param zeroWidth
  */
-void PP_SetZeroWidth(WS2812Settings* settings, unsigned char zeroWidth) {
-    settings->ZeroWidth = ZeroWidthReg = zeroWidth;
+void PP_SetZeroWidth(unsigned char zeroWidth) {
+    pixelSettings.ZeroWidth = ZeroWidthReg = zeroWidth;
 }
 
 /**
  * Changes the period between frames
  * @param latchWidth
  */
-void PP_SetLatchWidth(WS2812Settings* settings, unsigned int latchWidth) {
-    settings->LatchWidth = latchWidth;
+void PP_SetLatchWidth(unsigned int latchWidth) {
+    pixelSettings.LatchWidth = latchWidth;
 }
 
 
