@@ -2,10 +2,10 @@
  * Name: Wyatt J Callister
  * Date: February 1, 2017
  * 
- * Description: PixiPusher 4.0 is a continuation of the PixiPuhser programs. This
- * program takes a new the basic ideas of the PixiPuhser 4.0 and applies them to
+ * Description: PixiPusher 4.0 is a continuation of the PixiPusher programs. This
+ * program takes a new the basic ideas of the PixiPusher 4.0 and applies them to
  * a PIC24. This revision changes the data input type for USART to USB increasing
- * eliminating the the bottle neck that was imposed by USAERT. Additionally this
+ * eliminating the the bottle neck that was imposed by USART. Additionally this
  * PIC allows for 4 signals to be generated using by using the CLC Modules with 
  * a PWM and an SPI module, allowing for up to 4095 LEDs to be updated at 30fps
  * 
