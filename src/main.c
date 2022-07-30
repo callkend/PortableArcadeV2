@@ -11,7 +11,7 @@
     This is the generated main.c using PIC24 / dsPIC33 / PIC32MM MCUs.
 
   @Description
-    This source file provides main entry point for system intialization and application code development.
+    This source file provides main entry point for system initialization and application code development.
     Generation Information :
         Product Revision  :  PIC24 / dsPIC33 / PIC32MM MCUs - 1.95-b-SNAPSHOT
         Device            :  PIC24FJ128GB406
