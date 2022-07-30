@@ -31,7 +31,6 @@
           <itemPath>PixiPusher/Fonts/Font1.h</itemPath>
         </logicalFolder>
         <itemPath>PixiPusher/setup.h</itemPath>
-        <itemPath>PixiPusher/PP_Config.h</itemPath>
         <itemPath>PixiPusher/PixiMatrix.h</itemPath>
         <itemPath>PixiPusher/PixiPixel.h</itemPath>
         <itemPath>PixiPusher/Color.h</itemPath>

@@ -14,12 +14,16 @@
 #ifndef PIXI_PUSHER_H
 #define	PIXI_PUSHER_H
     
-    #include "PP_Config.h"
     #include "Color.h"
     #include <stdbool.h>
     #include <stdint.h>
 
     #define PixelSize (3)
+
+    #define BitWidthReg CCP4PRL
+    #define ZeroWidthReg CCP4RAL
+    #define LatchWidthReg PR1
+    #define ByteRateReg PR1
 
     typedef struct
     {

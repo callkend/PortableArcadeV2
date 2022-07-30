@@ -16,7 +16,6 @@
 #include <stdbool.h>
 
 #include "PixiPixel.h"
-#include "PP_Config.h"
 #include "Color.h"
 
 /********************************************************/
