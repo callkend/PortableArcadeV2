@@ -87,6 +87,8 @@
      */
     void PP_Service();
 
+    void PP_SetAutoUpdate(bool value);
+
     void PP_DisplayUpdate();
     
     void PP_DisplayUpdateStart();

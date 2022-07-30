@@ -58,7 +58,7 @@
 
 #define LEDCount (768)
 
-uint8_t DisplayArray[LEDCount];
+uint8_t DisplayArray[LEDCount * PixelSize];
 
 /*
                          Main application
@@ -81,6 +81,8 @@ int main(void)
 
     PixiMatrix matrix = PM_Init(16, 16, DisplayArray, PixelMap);
     Color c = { .R = 8, .G = 2, .B = 0, .A = 0xFF };
+    
+    PP_SetAutoUpdate(true);
 
     while (1)
     {

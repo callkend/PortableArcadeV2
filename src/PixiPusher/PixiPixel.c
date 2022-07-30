@@ -30,7 +30,7 @@ volatile WS2812Settings pixelSettings = {       \
     .BitWidth = 8,                              \
     .ZeroWidth = 4,                             \
     .LatchWidth = 0x1000,                       \
-    .AutoUpdate = true,                         \
+    .AutoUpdate = false,                        \
     .Updating = false,                          \
 };
 
@@ -62,14 +62,6 @@ void PP_SetLatchWidth(WS2812Settings* settings, unsigned int latchWidth) {
     settings->LatchWidth = latchWidth;
 }
 
-/**
- * Changes if the display is updated automatically or manually
- * @param autoUpdate
- */
-void PP_SetAutoUpdate(WS2812Settings* settings, bool autoUpdate) {
-    settings->AutoUpdate = autoUpdate;
-}
-
 
 volatile PixiChannelSettings channelSettings[] = {
     { .Channel = 0 },
@@ -85,19 +77,21 @@ void _PP_PrepareChannelsForUpdate();
 void PP_Init() {
 
     /****Port Setup****/
+    TRISBbits.TRISB8 = 0;           // SCCP4
+    ANSBbits.ANSB8 = 0;
+    RPOR4bits.RP8R = _RPOUT_OCM4;   // SCCP4 to RB9
+
+    TRISBbits.TRISB11 = 1;           // REFI
+    ANSBbits.ANSB11 = 0;
+
+    TRISDbits.TRISD11 = 0;          // REFO
+    ANSDbits.ANSD11 = 0;
+    RPOR6bits.RP12R = _RPOUT_REFO1; // REFO to RP12
+    
     TRISDbits.TRISD9 = 0;           // CLCAIN / CLCBIN
     ANSDbits.ANSD9 = 0;
     RPINR25bits.CLCINAR = 12;       // CLCINA to RD9 (RP4)
     RPINR25bits.CLCINBR = 12;       // CLCINB to RD9 (RP4)
-            
-    TRISDbits.TRISD11 = 0;          // REFO
-    ANSDbits.ANSD11 = 0;
-    RPOR6bits.RP12R = _RPOUT_REFO1; // REFO to RP12
-        
-    TRISBbits.TRISB8 = 0;           // SCCP4
-    ANSBbits.ANSB8 = 0;
-    RPOR4bits.RP8R = _RPOUT_OCM4;   // SCCP4 to RB9
-    
     
     /****PWM Setup****/
     //PWM 4 for the SPI clock source
@@ -136,7 +130,7 @@ void PP_InitChannel(uint8_t channel, uint8_t *array, uint16_t count, Color initi
         .Channel = channel,                 \
         };
 
-    channelSettings[channel] = channelSetting;
+    channelSettings[channel - 1] = channelSetting;
     
     /****Init Memory****/
     _PP_Fill(channelSetting, initialColor);
@@ -264,11 +258,11 @@ void PP_InitChannel(uint8_t channel, uint8_t *array, uint16_t count, Color initi
             TRISDbits.TRISD8 = 0; // Channel Output
             ANSDbits.ANSD8 = 0;
 
-            TRISBbits.TRISB13 = 0; // Channel Clock Out
+            TRISBbits.TRISB13 = 1; // Channel Clock Out
             ANSBbits.ANSB13 = 0;
 
-            TRISFbits.TRISF1 = 1; // Channel Clock In
-            ANSFbits.ANSELF1 = 0;
+            TRISFbits.TRISF1 = 0; // Channel Clock In
+            ANSFbits.ANSF1 = 0;
 
             // SPI
             SPI4CON1L = SPIxCON1L;
@@ -336,6 +330,15 @@ void PP_Fill(Color c) {
 void PP_Service() {
 }
 
+void PP_SetAutoUpdate(bool value)
+{
+   pixelSettings.AutoUpdate = value;
+
+   if (value) {
+        PP_DisplayUpdateStart();
+   }
+}
+
 void PP_DisplayUpdate() {
     PP_WaitForDisplayUpdateFinished();
     
@@ -349,7 +352,7 @@ void PP_DisplayUpdateStart() {
 
     ByteRateReg = pixelSettings.ByteRate; //Setup to clock data into DMA
 
-    // Get all the Channles that are setup going as close to each other as possible
+    // Get all the Channels that are setup going as close to each other as possible
     if (channelSettings[0].Channel){
         DMACH0bits.CHEN = true; //Re Enable the Channel
     }
