@@ -24,6 +24,7 @@
         <itemPath>mcc_generated_files/pin_manager.h</itemPath>
         <itemPath>mcc_generated_files/traps.h</itemPath>
         <itemPath>mcc_generated_files/system.h</itemPath>
+        <itemPath>mcc_generated_files/epmp.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="PixiPusher" projectFiles="true">
         <itemPath>PixiPusher/color.h</itemPath>
@@ -56,6 +57,7 @@
         <itemPath>mcc_generated_files/mcc.c</itemPath>
         <itemPath>mcc_generated_files/pin_manager.c</itemPath>
         <itemPath>mcc_generated_files/traps.c</itemPath>
+        <itemPath>mcc_generated_files/epmp.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="PixiPusher" projectFiles="true">
         <itemPath>PixiPusher/PixiPusher.c</itemPath>
@@ -84,7 +86,7 @@
         <targetDevice>PIC24FJ128GB406</targetDevice>
         <targetHeader></targetHeader>
         <targetPluginBoard></targetPluginBoard>
-        <platformTool>noID</platformTool>
+        <platformTool>pk4hybrid</platformTool>
         <languageToolchain>XC16</languageToolchain>
         <languageToolchainVersion>1.60</languageToolchainVersion>
         <platform>4</platform>

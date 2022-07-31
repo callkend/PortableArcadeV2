@@ -48,12 +48,14 @@
 #include "interrupt_manager.h"
 #include "traps.h"
 #include "usb/usb.h"
+#include "epmp.h"
 
 void SYSTEM_Initialize(void)
 {
     PIN_MANAGER_Initialize();
     INTERRUPT_Initialize();
     CLOCK_Initialize();
+    EPMP_Initialize();
     USBDeviceInit();
     USBDeviceAttach();
 }

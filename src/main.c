@@ -54,6 +54,8 @@
 #include "PixiPusher/color.h"
 #include "PixiPusher/setup.h"
 
+// #include "mcc_generated_files/epmp.h"
+
 /*
                          Main application
  */
@@ -66,8 +68,12 @@ int main(void)
     
     Setup();
 
+    char la = 0;
+    
     while (1)
     {
+        // EXTNOUT1 = ++la;
+        
         if( USBGetDeviceState() < CONFIGURED_STATE )
         {
             continue;
@@ -92,6 +98,8 @@ int main(void)
 
         // PP_Service();
         CDCTxService();
+        
+        
     }
 
     return 1;
