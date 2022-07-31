@@ -1,8 +1,13 @@
 
 #include <xc.h>
 
-void EPMP_Initialize(void)
+void __init_PMP(void)
 {
+    // Reset
+    LATFbits.LATF5 = 0;
+    TRISFbits.TRISF5 = 0;
+    ANSFbits.ANSF5 = 0;
+    
     // Address on separate pins, Master Mode, CS2 is CS2, Smart Address, Idle Z, No Interrupts
     PMCON1 = 0x0310;
     
@@ -16,11 +21,12 @@ void EPMP_Initialize(void)
     PMCON4 = 0x001F;
     
     // Disable all the chip selects
-    PMCS1CFbits.CSDIS = 1;
+    PMCS1CFbits.CSDIS = 0;
     PMCS2CFbits.CSDIS = 1;
         
     // Enable the port
-    PMCON1bits.PMPEN = 1;
+    PMCON1bits.PMPEN = 1;  
     
+    LATFbits.LATF5 = 1;
 }
 

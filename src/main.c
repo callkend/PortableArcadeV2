@@ -49,6 +49,7 @@
 
 #include "mcc_generated_files/system.h"
 #include "mcc_generated_files/usb/usb.h"
+#include "mcc_generated_files/epmp.h"
 
 #include "PixiPusher/PixiPusher.h"
 #include "PixiPusher/color.h"
@@ -71,8 +72,16 @@ int main(void)
     char la = 0;
     
     while (1)
-    {
-        // EXTNOUT1 = ++la;
+    {        
+        SCOREDISPLAY[0] = la;
+        SCOREDISPLAY[1] = la;
+        SCOREDISPLAY[2] = la;
+        SCOREDISPLAY[3] = la;
+
+        EXTNOUT1 = EXTNIN1;
+        ++la;
+        
+        continue;
         
         if( USBGetDeviceState() < CONFIGURED_STATE )
         {

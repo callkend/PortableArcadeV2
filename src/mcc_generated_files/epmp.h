@@ -12,32 +12,29 @@
 extern "C" {
 #endif
     
-    typedef union ScoreBoard {
-        struct {
-            char Cells[4];
-        };
-                
-        struct {
-            char Cell0;
-            char Cell1;          
-            char Cell2;          
-            char Cell3;          
-        };
-    };
+//    typedef union ScoreBoard {
+//        struct {
+//            char Cells[4];
+//        };
+//                
+//        struct {
+//            char Cell0;
+//            char Cell1;          
+//            char Cell2;          
+//            char Cell3;          
+//        };
+//    }; 
     
-    // __eds__ ScoreBoard __attribute__((eds, address(0x008000))) SCOREDISPLAY;
+    __eds__ uint8_t __attribute__((noload, address(0x008000))) EXTNIN1 __attribute__((space(eds)));
+
+    __eds__ uint8_t __attribute__((noload, address(0x008002))) EXTNIN2 __attribute__((space(eds)));
     
-    // __eds__ ScoreBoard __attribute__((eds, address(0x008008))) BONUSDISPLAY;    
+    __eds__ uint8_t __attribute__((noload, address(0x008006))) EXTNOUT1 __attribute__((space(eds)));
+        
+    __eds__ uint8_t __attribute__((noload, address(0x008010))) SCOREDISPLAY[4] __attribute__((space(eds)));
     
-    __eds__ unsigned char __attribute__((eds, address(0x008010))) EXTNIN1;
-
-    __eds__ unsigned char __attribute__((eds, address(0x008012))) EXTNIN2;
+    __eds__ uint8_t __attribute__((noload, address(0x008018))) BONUSDISPLAY[4] __attribute__((space(eds)));
     
-    __eds__ unsigned char __attribute__((eds, address(0x00801A))) EXTNOUT1;
-
-
-    void EPMP_Initialize(void);
-
 
 #ifdef	__cplusplus
 }

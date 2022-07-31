@@ -9,4 +9,6 @@
 Makefile-*.mk
 Makefile-*.properties
 Package-*.bash
+
 .generated_files
+.ca
