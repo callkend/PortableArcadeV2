@@ -65,8 +65,6 @@ int main(void)
     // initialize the device
     SYSTEM_Initialize();
     
-    PP_Setup();
-    
     Setup();
 
     char la = 0;
@@ -78,7 +76,10 @@ int main(void)
         SCOREDISPLAY[2] = la;
         SCOREDISPLAY[3] = la;
 
-        EXTNOUT1 = EXTNIN1;
+//        EXTNOUT1 = EXTNIN1;       
+//        EXTNOUT1 = EXTNIN2;
+        EXTNOUT1 = la;
+        
         ++la;
         
         continue;

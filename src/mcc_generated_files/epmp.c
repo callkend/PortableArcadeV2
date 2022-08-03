@@ -1,6 +1,7 @@
 
 #include <xc.h>
 
+// Magically gets called before main
 void __init_PMP(void)
 {
     // Reset
@@ -20,8 +21,10 @@ void __init_PMP(void)
     // Enable Address lines 0-4
     PMCON4 = 0x001F;
     
-    // Disable all the chip selects
-    PMCS1CFbits.CSDIS = 0;
+    // Enable CS1 Bank, WR and RD active low, 8 bit bus
+    PMCS1CF = 0x0000;
+    
+    // Don't use the CS2 bank
     PMCS2CFbits.CSDIS = 1;
         
     // Enable the port
