@@ -9,6 +9,10 @@ void __init_PMP(void)
     TRISFbits.TRISF5 = 0;
     ANSFbits.ANSF5 = 0;
     
+    // DataPort
+    TRISE |= 0x00FF;
+    ANSE &= 0xFF00;
+    
     // Address on separate pins, Master Mode, CS2 is CS2, Smart Address, Idle Z, No Interrupts
     PMCON1 = 0x0310;
     
@@ -23,6 +27,9 @@ void __init_PMP(void)
     
     // Enable CS1 Bank, WR and RD active low, 8 bit bus
     PMCS1CF = 0x0000;
+
+    // Use this setting to extend the read and write strobe
+    // PMCS1MDbits.DWAITM = 1;
     
     // Don't use the CS2 bank
     PMCS2CFbits.CSDIS = 1;

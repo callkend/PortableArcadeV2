@@ -71,14 +71,14 @@ int main(void)
     
     while (1)
     {        
+        char da = EXTNIN1;
+
         SCOREDISPLAY[0] = la;
         SCOREDISPLAY[1] = la;
         SCOREDISPLAY[2] = la;
         SCOREDISPLAY[3] = la;
 
-//        EXTNOUT1 = EXTNIN1;       
-//        EXTNOUT1 = EXTNIN2;
-        EXTNOUT1 = la;
+        EXTNOUT1 = da;
         
         ++la;
         

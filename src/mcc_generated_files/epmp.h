@@ -28,6 +28,8 @@ extern "C" {
     __eds__ uint8_t __attribute__((noload, address(0x008000))) EXTNIN1 __attribute__((space(eds)));
 
     __eds__ uint8_t __attribute__((noload, address(0x008002))) EXTNIN2 __attribute__((space(eds)));
+
+    __eds__ uint8_t __attribute__((noload, address(0x008004))) EXTBLANK __attribute__((space(eds)));
     
     __eds__ uint8_t __attribute__((noload, address(0x008006))) EXTNOUT1 __attribute__((space(eds)));
         
