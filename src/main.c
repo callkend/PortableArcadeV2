@@ -11,7 +11,7 @@
     This is the generated main.c using PIC24 / dsPIC33 / PIC32MM MCUs.
 
   @Description
-    This source file provides main entry point for system intialization and application code development.
+    This source file provides main entry point for system initialization and application code development.
     Generation Information :
         Product Revision  :  PIC24 / dsPIC33 / PIC32MM MCUs - 1.95-b-SNAPSHOT
         Device            :  PIC24FJ128GB406
@@ -50,9 +50,15 @@
 #include "mcc_generated_files/system.h"
 #include "mcc_generated_files/usb/usb.h"
 
-#include "PixiPusher/PixiPusher.h"
-#include "PixiPusher/color.h"
+#include "PixiPusher/PixiPixel.h"
+#include "PixiPusher/PixiMatrix.h"
+#include "PixiPusher/PixiGFX.h"
+#include "PixiPusher/Color.h"
 #include "PixiPusher/setup.h"
+
+#define LEDCount (768)
+
+uint8_t DisplayArray[LEDCount * PixelSize];
 
 /*
                          Main application
@@ -62,9 +68,21 @@ int main(void)
     // initialize the device
     SYSTEM_Initialize();
     
-    PP_Setup();
+    PP_Init();
+    PP_InitChannel(4, DisplayArray, LEDCount, LowestWhite);
     
     Setup();
+
+    extern uint16_t PixelMap[];
+    extern const PGfxFont Font1;
+
+    char text[] = { 0, 0, 0, 0, 0 };
+
+
+    PixiMatrix matrix = PM_Init(16, 16, DisplayArray, PixelMap);
+    Color c = { .R = 8, .G = 2, .B = 0, .A = 0xFF };
+    
+    PP_SetAutoUpdate(true);
 
     while (1)
     {
@@ -87,6 +105,12 @@ int main(void)
 
             if (readCount > 0)
             {
+                text[3] = text[2];
+                text[2] = text[1];
+                text[1] = text[0];
+                text[0] = readBuf[0];
+                
+                PG_DrawText(&matrix, text, 0, 0, c, LowestWhite, &Font1);
             }
         }
 

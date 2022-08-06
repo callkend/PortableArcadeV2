@@ -3,8 +3,14 @@
     - Main Display
         - ~~Import PixiPusher Driver~~
         - Implement Draw Functions
-            - Import Neo Pixel Libraries
-            - "Glue" Neo Pixel Libraries to PixiPusher Driver
+            - ~~SetPixel~~
+            - ~~GetPixel~~
+            - ~~DrawVerticalLine~~
+            - ~~DrawHorizontalLine~~
+            - ~~DrawRectangle~~
+            - ~~FillRectangle~~
+            - DrawChar
+            - DrawText
         - Auto brightness
     - IO Bus
         - Scoreboard
