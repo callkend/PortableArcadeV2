@@ -69,7 +69,7 @@ void PIN_MANAGER_Initialize (void)
     LATC = 0x0000;
     LATD = 0x0000;
     LATE = 0x0000;
-    LATF = 0x0000;
+    // LATF = 0x0000;
     LATG = 0x0000;
 
     /****************************************************************************
@@ -79,7 +79,7 @@ void PIN_MANAGER_Initialize (void)
     TRISC = 0x9000;
     TRISD = 0x0FFF;
     TRISE = 0x00FF;
-    TRISF = 0x00BB;
+    // TRISF = 0x00BB;
     TRISG = 0x03CC;
 
     /****************************************************************************
@@ -124,7 +124,7 @@ void PIN_MANAGER_Initialize (void)
     ANSB = 0xFF3F;
     ANSD = 0x0FFF;
     ANSE &= 0xFF00;
-    ANSF = 0x313F;
+    // ANSF = 0x313F;
     ANSG = 0xF3C3;
     ANSH = 0x001F;
 

@@ -55,7 +55,28 @@
 #include "PixiPusher/color.h"
 #include "PixiPusher/setup.h"
 
+#include "LCDText.h"
+
 // #include "mcc_generated_files/epmp.h"
+
+const uint16_t LCDDigits[16] = {
+    LCD_0,    
+    LCD_1,
+    LCD_2,
+    LCD_3,
+    LCD_4,
+    LCD_5,
+    LCD_6,
+    LCD_7,
+    LCD_8,
+    LCD_9,
+    LCD_A,
+    LCD_B,
+    LCD_C,
+    LCD_D,
+    LCD_E,
+    LCD_F,
+};
 
 /*
                          Main application
@@ -67,20 +88,36 @@ int main(void)
     
     Setup();
 
-    char la = 0;
+    uint8_t la = 0;
+    uint32_t de = 0;
     
+        
     while (1)
     {        
-        char da = EXTNIN1;
+        if (++de > 1000000)
+        {
+            uint16_t v = LCDDigits[la];
+            SCOREDISPLAY[0] = v;            
+            SCOREDISPLAY[1] = v;
+            SCOREDISPLAY[2] = v;
+            SCOREDISPLAY[3] = v;
 
-        SCOREDISPLAY[0] = la;
-        SCOREDISPLAY[1] = la;
-        SCOREDISPLAY[2] = la;
-        SCOREDISPLAY[3] = la;
+            BONUSDISPLAY[0] = v;
+            BONUSDISPLAY[1] = v;
+            BONUSDISPLAY[2] = v;
+            BONUSDISPLAY[3] = v;
+            
+            if (++la >= 16)
+            {
+                la = 0;
+            }
+            de = 0;
+        }
 
-        EXTNOUT1 = da;
         
-        ++la;
+        // char da = EXTNIN1;
+        
+        // EXTNOUT1 = da;
         
         continue;
         

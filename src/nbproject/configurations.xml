@@ -32,6 +32,7 @@
         <itemPath>PixiPusher/setup.h</itemPath>
         <itemPath>PixiPusher/PP_Config.h</itemPath>
       </logicalFolder>
+      <itemPath>LCDText.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
