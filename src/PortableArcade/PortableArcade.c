@@ -34,7 +34,7 @@ typedef union UserInputs
   {
     unsigned char allBits;
   };
-}
+};
 
 void ReadUserInputs()
 {

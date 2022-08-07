@@ -32,6 +32,9 @@
         <itemPath>PixiPusher/setup.h</itemPath>
         <itemPath>PixiPusher/PP_Config.h</itemPath>
       </logicalFolder>
+      <logicalFolder name="f2" displayName="PortableArchade" projectFiles="true">
+        <itemPath>PortableArcade/PortableArcade.h</itemPath>
+      </logicalFolder>
       <itemPath>LCDText.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
@@ -64,6 +67,9 @@
         <itemPath>PixiPusher/PixiPusher.c</itemPath>
         <itemPath>PixiPusher/setup.c</itemPath>
       </logicalFolder>
+      <logicalFolder name="f2" displayName="PortableArcade" projectFiles="true">
+        <itemPath>PortableArcade/PortableArcade.c</itemPath>
+      </logicalFolder>
       <itemPath>main.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
@@ -78,6 +84,7 @@
     <Elem>Adafruit-GFX-Library-master</Elem>
     <Elem>Adafruit_NeoMatrix-master</Elem>
     <Elem>Adafruit_NeoPixel-master</Elem>
+    <Elem>PortableArcade</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
