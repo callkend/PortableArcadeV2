@@ -46,17 +46,12 @@ void _update7Seg(uint16_t value, __eds__ uint8_t *board )
     
     while (*d)
     {
-      uint8_t digit = 0;
+        uint8_t digit = value / *d;
 
-      while (value >= *d)
-      {
-        ++digit;
-        value -= *d;
-      }
-
-      ++board;
-      *board++ = BCDToSeg[digit];
-      ++d;
+        value -= (*d++ * digit);
+        
+        ++board;
+        *board++ = BCDToSeg[digit];
     }
 }
 

@@ -66,18 +66,18 @@ int main(void)
     
     Setup();
 
-    uint16_t la = 9500;
+    uint16_t la = 0;
     uint32_t de = 0;
     
         
     while (1)
     {        
-        if (++de > 50000)
+        if (++de > 10000)
         {
             UpdateScoreBoard(la);
             UpdateBonusBoard(la);
             
-            if (++la >= 50000)
+            if (++la >= 10000)
             {
                 la = 0;
             }
