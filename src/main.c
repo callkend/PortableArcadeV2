@@ -49,34 +49,12 @@
 
 #include "mcc_generated_files/system.h"
 #include "mcc_generated_files/usb/usb.h"
-#include "mcc_generated_files/epmp.h"
 
 #include "PixiPusher/PixiPusher.h"
 #include "PixiPusher/color.h"
 #include "PixiPusher/setup.h"
 
-#include "LCDText.h"
-
-// #include "mcc_generated_files/epmp.h"
-
-const uint16_t LCDDigits[16] = {
-    LCD_0,    
-    LCD_1,
-    LCD_2,
-    LCD_3,
-    LCD_4,
-    LCD_5,
-    LCD_6,
-    LCD_7,
-    LCD_8,
-    LCD_9,
-    LCD_A,
-    LCD_B,
-    LCD_C,
-    LCD_D,
-    LCD_E,
-    LCD_F,
-};
+#include "PortableArcade/PortableArcade.h"
 
 /*
                          Main application
@@ -88,37 +66,24 @@ int main(void)
     
     Setup();
 
-    uint8_t la = 0;
+    uint16_t la = 9500;
     uint32_t de = 0;
     
         
     while (1)
     {        
-        if (++de > 1000000)
+        if (++de > 50000)
         {
-            uint16_t v = LCDDigits[la];
-            SCOREDISPLAY[0] = v;            
-            SCOREDISPLAY[1] = v;
-            SCOREDISPLAY[2] = v;
-            SCOREDISPLAY[3] = v;
-
-            BONUSDISPLAY[0] = v;
-            BONUSDISPLAY[1] = v;
-            BONUSDISPLAY[2] = v;
-            BONUSDISPLAY[3] = v;
+            UpdateScoreBoard(la);
+            UpdateBonusBoard(la);
             
-            if (++la >= 16)
+            if (++la >= 50000)
             {
                 la = 0;
             }
             de = 0;
         }
 
-        
-        // char da = EXTNIN1;
-        
-        // EXTNOUT1 = da;
-        
         continue;
         
         if( USBGetDeviceState() < CONFIGURED_STATE )
