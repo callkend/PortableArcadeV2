@@ -4,6 +4,9 @@
 
 void ADC_Initialize(void)
 {
+    //Setup RB12 to be a Analog input
+    ANSBbits.ANSB12 = 1;
+    TRISBbits.TRISB12 = 1;
     //Enable ADC for manual sampling
     AD1CON1 = 0x8000;
     AD1CON2 = 0x0000;
@@ -22,8 +25,10 @@ void ADC_Start(void)
 
 unsigned char ADC_Read(void)
 {
+    char ADCResgult;
     while(AD1CON1bits.DONE != 1) //Wait until read ADC conversion is completed
     {
     }
-    return AD1BUF0; //Return ADC result
+    ADCResult = ADC1BUF0 >> 2;
+    return ADCResult; //Return ADC result
 }
