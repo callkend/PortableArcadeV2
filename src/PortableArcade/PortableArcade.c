@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "PortableArcade.h"
 #include "LCDText.h"
 
 __eds__ uint8_t __attribute__((noload, address(0x008000))) EXTNIN1 __attribute__((space(eds)));
@@ -65,7 +66,23 @@ void UpdateBonusBoard(uint16_t value)
     _update7Seg(value, BONUSDISPLAY);
 }
 
-void ReadUserInputs()
+UserInput_t ReadUserInputs(void)
 {
-  
+    UserInput_t result = {
+        .AllBits = EXTNIN1,
+    };
+
+    return result;
+}
+
+bool SDCardPresent(void) {
+    return (EXTNIN2 & 0x01) == 0;
+}
+
+void SetSDCardCS(bool value) {
+    EXTNOUT1 = value ? 0x02 : 0x00;
+}
+
+void SetXBeeCS(bool value) {
+    EXTNOUT1 = value ? 0x01 : 0x00;
 }

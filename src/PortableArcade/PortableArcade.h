@@ -12,31 +12,32 @@
 extern "C" {
 #endif
 
-    typedef union UserInputs
+    typedef union UserInput_t
     {
       struct
       {
-        bool joyLeft:1;
-        bool joyRight:1;
-        bool joyUp:1;
-        bool joyDown:1;
-        bool button1:1;
-        bool button2:1;
-        bool button3:1;
-        bool button4:1;
+        bool JoyLeft:1;
+        bool JoyRight:1;
+        bool JoyUp:1;
+        bool JoyDown:1;
+        bool Button1:1;
+        bool Button2:1;
+        bool Button3:1;
+        bool Button4:1;
       };
       struct 
       {
-        unsigned char allBits;
+        uint8_t AllBits;
       };
-    };
+    } UserInput_t;
 
 
     void UpdateScoreBoard(uint16_t value);
     
     void UpdateBonusBoard(uint16_t value);
     
-    
+    UserInput_t ReadUserInputs(void);
+
 #ifdef	__cplusplus
 }
 #endif
