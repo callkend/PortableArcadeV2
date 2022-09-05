@@ -49,6 +49,7 @@
 #include "interrupt_manager.h"
 #include "traps.h"
 #include "usb/usb.h"
+#include "dma.h"
 
 void SYSTEM_Initialize(void)
 {
