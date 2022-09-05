@@ -100,6 +100,17 @@ void SPI3_Initialize (void)
 
 }
 
+#define FPB 16000000
+void SPI3_SetBaudRate(uint32_t buad)
+{
+    SPI3BRGL = ((FPB >> 1) / buad) - 1;
+}
+
+inline void SPI3_SetFullSpeed(void)
+{
+    SPI3BRGL = 0x00;
+}
+
 void SPI3_Exchange( uint8_t *pTransmitData, uint8_t *pReceiveData )
 {
 

@@ -54,6 +54,8 @@
 #include "PixiPusher/color.h"
 #include "PixiPusher/setup.h"
 
+#include "FileSystem/SDCard.h"
+
 #include "PortableArcade/PortableArcade.h"
 
 /*
@@ -63,6 +65,8 @@ int main(void)
 {
     // initialize the device
     SYSTEM_Initialize();
+    
+    SDCardInit();
     
     Setup();
 

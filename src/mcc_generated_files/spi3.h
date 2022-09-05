@@ -166,6 +166,9 @@ typedef enum {
 void SPI3_Initialize (void);
 
 
+void SPI3_SetBaudRate(uint32_t buad);
+
+void SPI3_SetFullSpeed(void);
 
 
 /**

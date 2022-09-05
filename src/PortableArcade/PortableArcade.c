@@ -80,9 +80,16 @@ bool SDCardPresent(void) {
 }
 
 void SetSDCardCS(bool value) {
-    EXTNOUT1 = value ? 0x02 : 0x00;
+    EXTNOUT1 = value ? 0x02 : 0x03;
+    
+    // Value is clocked in on address change
+    EXT_RES2 = 0x00;
+
 }
 
 void SetXBeeCS(bool value) {
-    EXTNOUT1 = value ? 0x01 : 0x00;
+    EXTNOUT1 = value ? 0x01 : 0x03;
+    
+    // Value is clocked in on address change
+    EXT_RES2 = 0x00;
 }

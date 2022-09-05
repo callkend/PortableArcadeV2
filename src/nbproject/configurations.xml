@@ -4,6 +4,9 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
+      <logicalFolder name="f3" displayName="FileSystem" projectFiles="true">
+        <itemPath>FileSystem/SDCard.h</itemPath>
+      </logicalFolder>
       <logicalFolder name="MCC Generated Files"
                      displayName="MCC Generated Files"
                      projectFiles="true">
@@ -45,6 +48,9 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
+      <logicalFolder name="f3" displayName="FileSystem" projectFiles="true">
+        <itemPath>FileSystem/SDCard.c</itemPath>
+      </logicalFolder>
       <logicalFolder name="MCC Generated Files"
                      displayName="MCC Generated Files"
                      projectFiles="true">
@@ -87,6 +93,7 @@
     <Elem>Adafruit_NeoMatrix-master</Elem>
     <Elem>Adafruit_NeoPixel-master</Elem>
     <Elem>PortableArcade</Elem>
+    <Elem>FileSystem</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
