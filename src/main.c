@@ -72,11 +72,13 @@ int main(void)
     // initialize the device
     SYSTEM_Initialize();
     
+    Setup();
+    
     SDCardInit();
+    
     PP_Init();
     PP_InitChannel(4, DisplayArray, LEDCount, LowestWhite);
-    
-    Setup();
+   
 
     extern uint16_t PixelMap[];
     extern const PGfxFont Font1;
@@ -106,8 +108,6 @@ int main(void)
             }
             de = 0;
         }
-
-        continue;
         
         if( USBGetDeviceState() < CONFIGURED_STATE )
         {

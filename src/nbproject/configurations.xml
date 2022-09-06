@@ -91,7 +91,6 @@
         <itemPath>PortableArcade/PortableArcade.c</itemPath>
       </logicalFolder>
       <itemPath>main.c</itemPath>
-      <itemPath>PortableArchade.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
