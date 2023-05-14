@@ -156,11 +156,11 @@ uint16_t PG_GetTextLength(char *text, const PGfxFont *font)
         uint8_t c = (uint8_t)*text++;
         if (c <= 128)
         {
-            result += font->Characters[c].Width;
+            result += (font->Characters[c].Width + 1);
         }
     }
     
-    return result;
+    return --result;
 }
 
 int PG_DrawNumber(PixiMatrix *matrix, int16_t number, int cursorX, int cursorY, Color foreColor, Color backColor, const PGfxFont *font)
