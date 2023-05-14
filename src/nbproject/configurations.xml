@@ -89,6 +89,8 @@
     <Elem>Adafruit-GFX-Library-master</Elem>
     <Elem>Adafruit_NeoMatrix-master</Elem>
     <Elem>Adafruit_NeoPixel-master</Elem>
+    <Elem>PortableArcade</Elem>
+    <Elem>FileSystem</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>

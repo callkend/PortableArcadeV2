@@ -17,6 +17,8 @@
                 <sourceRootElem>Adafruit-GFX-Library-master</sourceRootElem>
                 <sourceRootElem>Adafruit_NeoMatrix-master</sourceRootElem>
                 <sourceRootElem>Adafruit_NeoPixel-master</sourceRootElem>
+                <sourceRootElem>PortableArcade</sourceRootElem>
+                <sourceRootElem>FileSystem</sourceRootElem>
             </sourceRootList>
             <confList>
                 <confElem>
