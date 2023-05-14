@@ -98,6 +98,9 @@ int main(void)
     
     PP_SetAutoUpdate(true);
 
+    int de = 0;
+    int la = 0;
+    
     while (1)
     {        
         if (++de > 10000)
@@ -111,8 +114,6 @@ int main(void)
             }
             de = 0;
         }
-
-        continue;
         
         if( USBGetDeviceState() < CONFIGURED_STATE )
         {
