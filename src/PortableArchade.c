@@ -1,7 +1,7 @@
 
 #include <stdint.h>
 
-#define TEST_ARRAY
+// #define TEST_ARRAY
 
 #ifdef TEST_ARRAY
 
