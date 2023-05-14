@@ -25,12 +25,17 @@
         <itemPath>mcc_generated_files/traps.h</itemPath>
         <itemPath>mcc_generated_files/system.h</itemPath>
         <itemPath>mcc_generated_files/epmp.h</itemPath>
+        <itemPath>mcc_generated_files/dma.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="PixiPusher" projectFiles="true">
-        <itemPath>PixiPusher/color.h</itemPath>
-        <itemPath>PixiPusher/PixiPusher.h</itemPath>
+        <logicalFolder name="f1" displayName="Fonts" projectFiles="true">
+          <itemPath>PixiPusher/Fonts/Font1.h</itemPath>
+        </logicalFolder>
         <itemPath>PixiPusher/setup.h</itemPath>
-        <itemPath>PixiPusher/PP_Config.h</itemPath>
+        <itemPath>PixiPusher/PixiMatrix.h</itemPath>
+        <itemPath>PixiPusher/PixiPixel.h</itemPath>
+        <itemPath>PixiPusher/Color.h</itemPath>
+        <itemPath>PixiPusher/PixiGFX.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f2" displayName="PortableArcade" projectFiles="true">
         <itemPath>PortableArcade/PortableArcade.h</itemPath>
@@ -62,15 +67,23 @@
         <itemPath>mcc_generated_files/pin_manager.c</itemPath>
         <itemPath>mcc_generated_files/traps.c</itemPath>
         <itemPath>mcc_generated_files/epmp.c</itemPath>
+        <itemPath>mcc_generated_files/dma.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="PixiPusher" projectFiles="true">
-        <itemPath>PixiPusher/PixiPusher.c</itemPath>
+        <logicalFolder name="f1" displayName="Fonts" projectFiles="true">
+          <itemPath>PixiPusher/Fonts/Font1.c</itemPath>
+        </logicalFolder>
         <itemPath>PixiPusher/setup.c</itemPath>
+        <itemPath>PixiPusher/PixiMatrix.c</itemPath>
+        <itemPath>PixiPusher/PixiPixel.c</itemPath>
+        <itemPath>PixiPusher/Color.c</itemPath>
+        <itemPath>PixiPusher/PixiGFX.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f2" displayName="PortableArcade" projectFiles="true">
         <itemPath>PortableArcade/PortableArcade.c</itemPath>
       </logicalFolder>
       <itemPath>main.c</itemPath>
+      <itemPath>PortableArchade.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -85,6 +98,7 @@
     <Elem>Adafruit_NeoMatrix-master</Elem>
     <Elem>Adafruit_NeoPixel-master</Elem>
     <Elem>PortableArcade</Elem>
+    <Elem>FileSystem</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
@@ -113,7 +127,7 @@
         </archiverTool>
         <loading>
           <useAlternateLoadableFile>false</useAlternateLoadableFile>
-          <parseOnProdLoad>false</parseOnProdLoad>
+          <parseOnProdLoad>true</parseOnProdLoad>
           <alternateLoadableFile></alternateLoadableFile>
         </loading>
         <subordinates>

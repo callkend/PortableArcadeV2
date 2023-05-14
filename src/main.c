@@ -11,7 +11,7 @@
     This is the generated main.c using PIC24 / dsPIC33 / PIC32MM MCUs.
 
   @Description
-    This source file provides main entry point for system intialization and application code development.
+    This source file provides main entry point for system initialization and application code development.
     Generation Information :
         Product Revision  :  PIC24 / dsPIC33 / PIC32MM MCUs - 1.95-b-SNAPSHOT
         Device            :  PIC24FJ128GB406
@@ -50,11 +50,17 @@
 #include "mcc_generated_files/system.h"
 #include "mcc_generated_files/usb/usb.h"
 
-#include "PixiPusher/PixiPusher.h"
-#include "PixiPusher/color.h"
+#include "PixiPusher/PixiPixel.h"
+#include "PixiPusher/PixiMatrix.h"
+#include "PixiPusher/PixiGFX.h"
+#include "PixiPusher/Color.h"
 #include "PixiPusher/setup.h"
 
 #include "PortableArcade/PortableArcade.h"
+
+#define LEDCount (768)
+
+uint8_t DisplayArray[LEDCount * PixelSize];
 
 /*
                          Main application
@@ -64,12 +70,34 @@ int main(void)
     // initialize the device
     SYSTEM_Initialize();
     
+    PP_Init();
+    PP_InitChannel(4, DisplayArray, LEDCount, LowestWhite);
+    
     Setup();
 
-    uint16_t la = 0;
-    uint32_t de = 0;
+    extern uint16_t PixelMap[];
+    extern const PGfxFont Font1;
+
+#define TextLineLength 16
+#define LineCount 3
     
-        
+    char text[LineCount][TextLineLength];
+    
+    for (int y = 0; y < LineCount; ++y)
+    {
+        for (int x = 0; x < LineCount; ++x)
+        {
+            text[y][x] = 0x00;
+        }
+    }
+    
+    char activeLine = 0;
+
+    PixiMatrix matrix = PM_Init(32, 24, DisplayArray, PixelMap);
+    Color color = { .R = 0, .G = 0, .B = 255, .A = 0xFF };
+    
+    PP_SetAutoUpdate(true);
+
     while (1)
     {        
         if (++de > 10000)
@@ -105,6 +133,79 @@ int main(void)
 
             if (readCount > 0)
             {
+                char c = readBuf[0];
+                
+                switch (c)
+                {
+                    case '\n':
+                        break;
+                        
+                    case '\r':
+                        if (++activeLine >= LineCount)
+                        {
+                            activeLine = 0;
+                        }
+                        break;
+                    
+                    case '\x7F':
+                    case '\b':
+                    {
+                        char *p = text[activeLine];
+                        
+                        if (*p == 0x00)
+                        {
+                            if (activeLine > 0)
+                            {
+                                --activeLine;
+                            }
+                        }
+                        else
+                        {
+                            while (*p)
+                            {
+                                ++p;
+                            }
+
+                            --p;
+                            *p = 0x00;     
+                        }
+
+                    }
+                        break;
+                        
+                    default:
+                    {
+                        char *p = text[activeLine];
+                        
+                        while (*p)
+                        {
+                            ++p;
+                        }
+                        
+                        char length = p - text[activeLine];
+                        
+                        if (length < (TextLineLength - 1))
+                        {
+                            *p++ = c;
+                            *p = 0x00;
+                        }
+                    }
+                        break;
+                }
+                
+                {
+                    char *p = text[activeLine];
+                    
+                    char x = PG_GetTextLength(p, &Font1);
+                    x = 15 - (x >> 1);
+                
+                    char y = (activeLine * 8);
+                    
+                    PG_FillRectangle(&matrix, 0, y, 32, y + 8, Black);
+                           
+                    PG_DrawText(&matrix, p, x, y, color, Black, &Font1);        
+                }
+
             }
         }
 
