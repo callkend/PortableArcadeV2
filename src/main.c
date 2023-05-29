@@ -46,6 +46,7 @@
   Section: Included Files
 */
 #include <stdint.h>
+#include <string.h>
 
 #include "mcc_generated_files/system.h"
 #include "mcc_generated_files/usb/usb.h"
@@ -57,10 +58,118 @@
 #include "PixiPusher/setup.h"
 
 #include "PortableArcade/PortableArcade.h"
+#include "PortableArcade/Menu.h"
 
 #define LEDCount (768)
 
 uint8_t DisplayArray[LEDCount * PixelSize];
+
+extern const PGfxFont Font1;
+Menu_t *ActiveMenu;
+
+MenuLoopHandle ActiveLoop = NULL;
+
+Menu_t snakeMenu[] = {
+    DEFINE_MENU("Easy", NULL),    
+    DEFINE_MENU("Hard", NULL),
+    DEFINE_EMPTY_MENU(),
+};
+
+Menu_t menu_1[] = {
+    DEFINE_MENU("Snake", snakeMenu),
+    DEFINE_MENU("Tetris", NULL),
+    DEFINE_MENU("Config", NULL),
+};
+
+void RenderMenuLine(PixiMatrix *matrix, char *text, int line, Color color){
+
+    char x = PG_GetTextLength(text, &Font1);
+    x = 15 - (x >> 1);
+
+    char y = (line * 8);
+
+    PG_FillRectangle(matrix, 0, y, 32, y + 8, Black);
+
+    PG_DrawText(matrix, text, x, y, color, Black, &Font1);     
+}
+
+void RenderMenu(PixiMatrix *matrix, Menu_t *menu){
+    
+    char p[MAX_MENU_NAME_LENGTH];
+    const static Color color = { .R = 32, .G = 0, .B = 0, .A = 0xFF };
+
+    if (menu->SubMenus == NULL){
+        strcpy(p, "Error:");
+        RenderMenuLine(matrix, p, 0, color);
+        strcpy(p, "No Sub");
+        RenderMenuLine(matrix, p, 1, color);
+        
+    } else {
+        int i;
+        int j = menu->ActiveSubMenuIndex - 1;
+        
+        for (i = 0; i < 3; ++i) {
+            const char* name = menu->SubMenus[j++].Name;
+            if (j > 0 && name != NULL) {
+                strcpy(p, name);
+                RenderMenuLine(matrix, p, i, color);
+            } else {
+                p[0] = 0x00;
+                RenderMenuLine(matrix, p, i, color);
+            }
+        }
+    }
+    
+}
+
+void ProcessMenus(PixiMatrix *matrix){
+    if (ActiveLoop != NULL)
+    {
+        if (ActiveLoop() == 0){
+            return;
+        }
+        
+        ActiveLoop = NULL;
+        RenderMenu(matrix, ActiveMenu);
+    } else {
+        static UserInput_t lastInput = { .AllBits = 0xFF };
+        
+        UserInput_t input = ReadUserInputs();
+
+        // Only process the input if the state has changed
+        if (input.AllBits != lastInput.AllBits)
+        {
+            lastInput.AllBits = input.AllBits;
+
+            if (!input.JoyRight){
+                // If the menu has a loop, then process the loop
+                if (ActiveMenu->Loop != NULL) {
+                    ActiveMenu->Setup();
+                    ActiveLoop = ActiveMenu->Loop;
+                } else {
+                    ActiveMenu->SubMenus[ActiveMenu->ActiveSubMenuIndex].ParentMenu = ActiveMenu;
+
+                    ActiveMenu = &ActiveMenu->SubMenus[ActiveMenu->ActiveSubMenuIndex];
+                }
+            } else if (!input.JoyLeft) {
+                if (ActiveMenu->ParentMenu != NULL){
+                    ActiveMenu = ActiveMenu->ParentMenu;
+                }
+
+            } else if (!input.JoyUp) {
+                if (ActiveMenu->ActiveSubMenuIndex > 0){
+                    --ActiveMenu->ActiveSubMenuIndex;
+                }
+            } else if (!input.JoyDown){
+                if (ActiveMenu->SubMenus[ActiveMenu->ActiveSubMenuIndex + 1].Name[0] != '\x00'){
+                    ++ActiveMenu->ActiveSubMenuIndex;
+                }
+            }
+            
+            RenderMenu(matrix, ActiveMenu);
+        }
+    }
+}
 
 /*
                          Main application
@@ -76,8 +185,12 @@ int main(void)
     Setup();
 
     extern uint16_t PixelMap[];
-    extern const PGfxFont Font1;
 
+    Menu_t mainMenu = DEFINE_MENU("Hello", &menu_1);
+    
+    ActiveMenu = &mainMenu;
+   
+     
 #define TextLineLength 16
 #define LineCount 3
     
@@ -101,8 +214,12 @@ int main(void)
     int de = 0;
     int la = 0;
     
+    RenderMenu(&matrix, ActiveMenu);
+
     while (1)
     {        
+        ProcessMenus(&matrix);
+         
         if (++de > 10000)
         {
             UpdateScoreBoard(la);

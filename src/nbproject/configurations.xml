@@ -40,6 +40,7 @@
       <logicalFolder name="f2" displayName="PortableArcade" projectFiles="true">
         <itemPath>PortableArcade/PortableArcade.h</itemPath>
         <itemPath>PortableArcade/LCDText.h</itemPath>
+        <itemPath>PortableArcade/Menu.h</itemPath>
       </logicalFolder>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
@@ -81,6 +82,7 @@
       </logicalFolder>
       <logicalFolder name="f2" displayName="PortableArcade" projectFiles="true">
         <itemPath>PortableArcade/PortableArcade.c</itemPath>
+        <itemPath>PortableArcade/Menu.c</itemPath>
       </logicalFolder>
       <itemPath>main.c</itemPath>
       <itemPath>PortableArchade.c</itemPath>
@@ -110,7 +112,7 @@
         <targetPluginBoard></targetPluginBoard>
         <platformTool>pk4hybrid</platformTool>
         <languageToolchain>XC16</languageToolchain>
-        <languageToolchainVersion>1.60</languageToolchainVersion>
+        <languageToolchainVersion>2.00</languageToolchainVersion>
         <platform>4</platform>
       </toolsSet>
       <packs>
@@ -369,6 +371,9 @@
         <property key="programoptions.uselvpprogramming" value="false"/>
         <property key="voltagevalue" value="3.25"/>
       </PICkit3PlatformTool>
+      <pk4hybrid>
+        <property key="debugoptions.useswbreakpoints" value="true"/>
+      </pk4hybrid>
     </conf>
   </confs>
 </configurationDescriptor>
