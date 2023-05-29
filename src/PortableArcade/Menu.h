@@ -31,7 +31,11 @@
 #ifndef XC_HEADER_TEMPLATE_H
 #define	XC_HEADER_TEMPLATE_H
 
-#include <xc.h> // include processor files - each processor file is guarded.  
+#include <xc.h> // include processor files - each processor file is guarded.
+
+#ifndef PIXI_PUSHER_H
+#include "PixiMatrix.h"
+#endif
 
 // TODO Insert appropriate #include <>
 
@@ -86,12 +90,18 @@ extern "C" {
         
     } Menu_t;
 
+    typedef struct MenuState {
+        Menu_t *ActiveMenu;
+        MenuLoopHandle ActiveLoop;
+    } MenuState_t;
+
 #define DEFINE_MENU(name, subMenus) \
 {                                   \
     .Name = name,                   \
     .ActiveSubMenuIndex = 0,        \
     .SubMenus = subMenus,           \
     .ParentMenu = NULL,             \
+    .Setup = NULL,                  \
     .Loop = NULL,                   \
 }
     
@@ -101,9 +111,24 @@ extern "C" {
     .ActiveSubMenuIndex = 0,        \
     .SubMenus = NULL,               \
     .ParentMenu = NULL,             \
+    .Setup = NULL,                  \
     .Loop = NULL,                   \
 }
+
+#define DEFINE_MENU_FUNCTION(name, startup, loop) \
+{                                                 \
+    .Name = "",                                   \
+    .ActiveSubMenuIndex = 0,                      \
+    .SubMenus = NULL,                             \
+    .ParentMenu = NULL,                           \
+    .Setup = setup,                               \
+    .Loop = loop,                                 \
+}
     
+void ProcessMenus(MenuState_t *state, PixiMatrix *matrix);
+
+void RenderMenu(Menu_t *menu, PixiMatrix *matrix);
+
 #ifdef	__cplusplus
 }
 #endif /* __cplusplus */

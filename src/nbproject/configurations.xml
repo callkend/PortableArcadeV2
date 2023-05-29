@@ -101,6 +101,9 @@
     <Elem>Adafruit_NeoPixel-master</Elem>
     <Elem>PortableArcade</Elem>
     <Elem>FileSystem</Elem>
+    <Elem>PixiPusher/</Elem>
+    <Elem>PortableArcade/</Elem>
+    <Elem>FileSystem/</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
@@ -371,6 +374,9 @@
         <property key="programoptions.uselvpprogramming" value="false"/>
         <property key="voltagevalue" value="3.25"/>
       </PICkit3PlatformTool>
+      <Tool>
+        <property key="debugoptions.useswbreakpoints" value="true"/>
+      </Tool>
       <pk4hybrid>
         <property key="debugoptions.useswbreakpoints" value="true"/>
       </pk4hybrid>

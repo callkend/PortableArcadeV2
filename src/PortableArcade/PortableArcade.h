@@ -31,10 +31,15 @@ extern "C" {
       };
     } UserInput_t;
 
+    void ClearScoreBoard(void);
 
     void UpdateScoreBoard(uint16_t value);
     
+    void ClearBonusBoard(void);
+    
     void UpdateBonusBoard(uint16_t value);
+    
+    void ResetArcade(void);
     
     UserInput_t ReadUserInputs(void);
 
