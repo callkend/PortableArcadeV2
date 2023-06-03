@@ -1,23 +1,88 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 #include "Color.h"
+#include "PixiPixel.h"
 #include "PixiMatrix.h"
 #include "PixiGFX.h"
 
-Color PG_GetPixel(PixiMatrix *matrix, uint16_t x, uint16_t y)
-{
-    return PM_GetPixel(matrix, x, y);
+PixiGFX PG_Init(PixiMatrix *matrix){
+
+    PixiGFX result = {
+        .Matrix = matrix,
+        .Brightness = 7,
+        .Dimness = 0,
+        .Layer1 = NULL
+    };
+     
+    result.Layer1 = (uint8_t*)malloc(matrix->Width * matrix->Height * PixelSize);
+
+    // Trap the program, the Brightness layer can't be used
+    while (result.Layer1 == NULL);
+
+    // Copy the current display values into the brightness layer
+    uint16_t count = (matrix->Width * matrix->Width);
+    uint8_t *matrixPnt = matrix->PixelArray;
+    uint8_t *bLayerPnt = result.Layer1;
+    
+    while (--count > 0)
+    {
+        *bLayerPnt++ = *matrixPnt++;
+        *bLayerPnt++ = *matrixPnt++;
+        *bLayerPnt++ = *matrixPnt++;
+    }
+    
+    return result;
 }
 
-void PG_SetPixel(PixiMatrix *matrix, uint16_t x, uint16_t y, Color c)
+void PG_SetBrightness(PixiGFX *graphics, uint8_t brightness)
 {
+    brightness &= 0x07;
+    uint8_t dimness = (~brightness & 0x07);
+    
+    // Only do work if needed
+    if (graphics->Brightness != brightness){
+        
+        uint16_t count = (graphics->Matrix->Width * graphics->Matrix->Height);
+        
+        uint8_t *matrixPnt = graphics->Matrix->PixelArray;
+        uint8_t *bLayerPnt = graphics->Layer1;
+        
+        // Re-render the image at the new brightness level
+        while (--count > 0)
+        {
+            *matrixPnt++ = *bLayerPnt++ >> dimness;
+            *matrixPnt++ = *bLayerPnt++ >> dimness;
+            *matrixPnt++ = *bLayerPnt++ >> dimness;
+        }
+        
+        graphics->Brightness = brightness;
+        graphics->Dimness = dimness;
+    }
+}
 
+Color PG_GetPixel(PixiGFX *graphics, uint16_t x, uint16_t y)
+{
+    uint8_t *pnt = &graphics->Layer1[PM_GetLinerOffset(graphics->Matrix, x, y)];
+
+    Color result = {
+        .A = 0xFF,
+        .G = *pnt++,
+        .R = *pnt++,
+        .B = *pnt,
+    };
+    return result;
+}
+
+void PG_SetPixel(PixiGFX *graphics, uint16_t x, uint16_t y, Color c)
+{
     if (c.A > 0)
     {
+        // Handle Transparency
         if (c.A < 0xFF) {
-            Color current = PM_GetPixel(matrix, x, y);
+            Color current = PG_GetPixel(graphics, x, y);
 
             uint8_t inverseA = c.A ^ 0xFF;
 
@@ -26,67 +91,85 @@ void PG_SetPixel(PixiMatrix *matrix, uint16_t x, uint16_t y, Color c)
             c.R = (c.B / inverseA) + (current.B / c.A);
         }
 
-        PM_SetPixel(matrix, x, y, c);
+        uint16_t offset = PM_GetLinerOffset(graphics->Matrix, x, y);
+        
+        // Set the raw value
+        uint8_t *pntB = &graphics->Layer1[offset];
+        uint8_t *pntM = &graphics->Matrix->PixelArray[offset];
+        
+        *pntB++ = c.G;
+        *pntM++ = c.G >> graphics->Dimness;
+        
+        *pntB++ = c.R;
+        *pntM++ = c.R >> graphics->Dimness;
+        
+        *pntB   = c.B;
+        *pntM   = c.B >> graphics->Dimness;
     }
 }
 
-void PG_Fill(PixiMatrix *matrix, Color c)
+void PG_Fill(PixiGFX *graphics, Color c)
 {
-    int16_t maxPixels = (matrix->Width * matrix->Height) + 1;
-
-    uint8_t *pnt = matrix->PixelArray;
+    int16_t maxPixels = (graphics->Matrix->Width * graphics->Matrix->Height) + 1;
+    uint8_t *pntB = graphics->Layer1;
+    uint8_t *pntM = graphics->Matrix->PixelArray;
     while (--maxPixels > 0)
     {
-        *pnt++ = c.G;
-        *pnt++ = c.R;
-        *pnt++ = c.B;
+        *pntB++ = c.G;
+        *pntM++ = c.G;
+        
+        *pntB++ = c.R;
+        *pntM++ = c.R;
+        
+        *pntB++ = c.B;
+        *pntM++ = c.B;
     }
 }
 
-void PG_DrawHorizontalLine(PixiMatrix *matrix, uint16_t sx, uint16_t ex, uint16_t y, Color c)
+void PG_DrawHorizontalLine(PixiGFX *graphics, uint16_t sx, uint16_t ex, uint16_t y, Color c)
 {
     for (uint16_t x = sx; x < ex; ++x)
     {
-        PM_SetPixel(matrix, x, y, c);
+        PG_SetPixel(graphics, x, y, c);
     }
 }
 
-void PG_DrawVerticalLine(PixiMatrix *matrix, uint16_t x, uint16_t sy, uint16_t ey, Color c)
+void PG_DrawVerticalLine(PixiGFX *graphics, uint16_t x, uint16_t sy, uint16_t ey, Color c)
 {
     for (uint16_t y = sy; y < ey; ++y)
     {
-        PM_SetPixel(matrix, x, y, c);
+        PG_SetPixel(graphics, x, y, c);
     }
 }
 
-void PG_DrawRectangle(PixiMatrix *matrix, uint16_t sx, uint16_t sy, uint16_t ex, uint16_t ey, Color c)
+void PG_DrawRectangle(PixiGFX *graphics, uint16_t sx, uint16_t sy, uint16_t ex, uint16_t ey, Color c)
 {
-    PG_DrawHorizontalLine(matrix, sx, ex, sy, c);
-    PG_DrawHorizontalLine(matrix, sx, ex, ey, c);
-    PG_DrawVerticalLine(matrix, sx, sy + 1, ey - 1, c);
-    PG_DrawVerticalLine(matrix, ex, sy + 1, ey - 1, c);
+    PG_DrawHorizontalLine(graphics, sx, ex, sy, c);
+    PG_DrawHorizontalLine(graphics, sx, ex, ey, c);
+    PG_DrawVerticalLine(graphics, sx, sy + 1, ey - 1, c);
+    PG_DrawVerticalLine(graphics, ex, sy + 1, ey - 1, c);
 }
 
-void PG_FillRectangle(PixiMatrix *matrix, uint16_t sx, uint16_t sy, uint16_t ex, uint16_t ey, Color c)
+void PG_FillRectangle(PixiGFX *graphics, uint16_t sx, uint16_t sy, uint16_t ex, uint16_t ey, Color c)
 {
     for (uint16_t x = sx; x <= ex; ++x)
     {
         for (uint16_t y = sy; y <= ey; ++y)
         {
-            PM_SetPixel(matrix, x, y, c);
+            PG_SetPixel(graphics, x, y, c);
         }
     }
 }
 
-int _PG_DrawChar(PixiMatrix *matrix, PGfxCharacter ch, int cursorX, int cursorY, Color foreColor, Color backColor, bool addCharSpace)
+int _PG_DrawChar(PixiGFX *graphics, PGfxCharacter ch, int cursorX, int cursorY, Color foreColor, Color backColor, bool addCharSpace)
 {
 
     // Make sure the character has a render
     if (ch.Width > 0)
     {
         // Check the the character will render in visible space
-        if (cursorX < matrix->Width && (ch.Width + cursorX) > 0 &&
-            (cursorY + 8) >= 0 && cursorY < matrix->Height)
+        if (cursorX < graphics->Matrix->Width && (ch.Width + cursorX) > 0 &&
+            (cursorY + 8) >= 0 && cursorY < graphics->Matrix->Height)
         {
             // The character will render on the screen at least a little
 
@@ -100,10 +183,10 @@ int _PG_DrawChar(PixiMatrix *matrix, PGfxCharacter ch, int cursorX, int cursorY,
                     int px = cursorX + x;
                     int py = cursorY + y;
 
-                    if (px >= 0 && px < matrix->Width &&
-                        py >= 0 && py < matrix->Height)
+                    if (px >= 0 && px < graphics->Matrix->Width &&
+                        py >= 0 && py < graphics->Matrix->Height)
                     {
-                        PG_SetPixel(matrix, px, py, (row & mask) ? foreColor : backColor);
+                        PG_SetPixel(graphics, px, py, (row & mask) ? foreColor : backColor);
                     }
                     
                     mask = mask >> 1;
@@ -113,7 +196,7 @@ int _PG_DrawChar(PixiMatrix *matrix, PGfxCharacter ch, int cursorX, int cursorY,
 
         cursorX += ch.Width;
         if (addCharSpace){
-            PG_DrawVerticalLine(matrix, cursorX, cursorY, cursorY + 8, backColor);
+            PG_DrawVerticalLine(graphics, cursorX, cursorY, cursorY + 8, backColor);
             ++cursorX;
         }
     }
@@ -121,19 +204,19 @@ int _PG_DrawChar(PixiMatrix *matrix, PGfxCharacter ch, int cursorX, int cursorY,
     return cursorX;
 }
 
-int PG_DrawChar(PixiMatrix *matrix, char c, int cursorX, int cursorY, Color foreColor, Color backColor, const PGfxFont *font)
+int PG_DrawChar(PixiGFX *graphics, char c, int cursorX, int cursorY, Color foreColor, Color backColor, const PGfxFont *font)
 {
     // Make sure the character is in the ASCII space
     if (c <= 128)
     {
         PGfxCharacter ch = font->Characters[(uint8_t)c];
-        _PG_DrawChar(matrix, ch, cursorX, cursorY, foreColor, backColor, true);
+        _PG_DrawChar(graphics, ch, cursorX, cursorY, foreColor, backColor, true);
     }
 
     return cursorX;    
 }
 
-int PG_DrawText(PixiMatrix *matrix, char *text, int cursorX, int cursorY, Color foreColor, Color backColor, const PGfxFont *font)
+int PG_DrawText(PixiGFX *graphics, char *text, int cursorX, int cursorY, Color foreColor, Color backColor, const PGfxFont *font)
 {
     while (*text)
     {
@@ -141,7 +224,7 @@ int PG_DrawText(PixiMatrix *matrix, char *text, int cursorX, int cursorY, Color 
         if (c <= 128)
         {
             PGfxCharacter ch = font->Characters[(uint8_t)c];
-            cursorX = _PG_DrawChar(matrix, ch, cursorX, cursorY, foreColor, backColor, true);
+            cursorX = _PG_DrawChar(graphics, ch, cursorX, cursorY, foreColor, backColor, true);
         }
     }
 
@@ -163,18 +246,18 @@ uint16_t PG_GetTextLength(char *text, const PGfxFont *font)
     return --result;
 }
 
-int PG_DrawNumber(PixiMatrix *matrix, int16_t number, int cursorX, int cursorY, Color foreColor, Color backColor, const PGfxFont *font)
+int PG_DrawNumber(PixiGFX *graphics, int16_t number, int cursorX, int cursorY, Color foreColor, Color backColor, const PGfxFont *font)
 {
     const uint16_t decades[] = { 10000, 1000, 100, 10, 1, 0 };
 
     PGfxCharacter ch; 
     if (number == 0) {
         ch = font->Characters[(uint8_t)'0'];
-        return _PG_DrawChar(matrix, ch, cursorX, cursorY, foreColor, backColor, true);
+        return _PG_DrawChar(graphics, ch, cursorX, cursorY, foreColor, backColor, true);
 
     } else if (number < 0) {
         ch = font->Characters[(uint8_t)'-'];
-        cursorX = _PG_DrawChar(matrix, ch, cursorX, cursorY, foreColor, backColor, true);
+        cursorX = _PG_DrawChar(graphics, ch, cursorX, cursorY, foreColor, backColor, true);
     }
 
     const uint16_t *d = decades;
@@ -193,7 +276,7 @@ int PG_DrawNumber(PixiMatrix *matrix, int16_t number, int cursorX, int cursorY, 
         }
 
         ch = font->Characters[digit + '0'];
-        cursorX = _PG_DrawChar(matrix, ch, cursorX, cursorY, foreColor, backColor, true);
+        cursorX = _PG_DrawChar(graphics, ch, cursorX, cursorY, foreColor, backColor, true);
 
         ++d;
     }

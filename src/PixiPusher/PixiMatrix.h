@@ -24,6 +24,8 @@ extern "C" {
 
     PixiMatrix PM_Init(uint16_t width, uint16_t height, uint8_t *pixelArray, const uint16_t *matrixMap);
 
+    uint16_t PM_GetLinerOffset(PixiMatrix* matrix, uint16_t x, uint16_t y);
+
     void PM_SetPixel(PixiMatrix* matrix, uint16_t x, uint16_t y, Color color);
 
     Color PM_GetPixel(PixiMatrix* matrix, uint16_t x, uint16_t y);

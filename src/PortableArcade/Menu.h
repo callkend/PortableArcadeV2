@@ -34,7 +34,7 @@
 #include <xc.h> // include processor files - each processor file is guarded.
 
 #ifndef PIXI_PUSHER_H
-#include "PixiMatrix.h"
+#include "../PixiPusher/PixiGFX.h"
 #endif
 
 // TODO Insert appropriate #include <>
@@ -125,9 +125,9 @@ extern "C" {
     .Loop = loop,                                 \
 }
     
-void ProcessMenus(MenuState_t *state, PixiMatrix *matrix);
+void ProcessMenus(MenuState_t *state, PixiGFX *graphics);
 
-void RenderMenu(Menu_t *menu, PixiMatrix *matrix);
+void RenderMenu(Menu_t *menu, PixiGFX *graphics);
 
 #ifdef	__cplusplus
 }

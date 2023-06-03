@@ -122,17 +122,20 @@ int main(void)
     char activeLine = 0;
 
     PixiMatrix matrix = PM_Init(32, 24, DisplayArray, PixelMap);
+    PixiGFX graphics = PG_Init(&matrix);
+    PG_SetBrightness(&graphics, 3);
+    
     Color color = { .R = 0, .G = 0, .B = 255, .A = 0xFF };
     
     PP_SetAutoUpdate(true);
     
     ResetArcade();
     
-    RenderMenu(menuState.ActiveMenu, &matrix);
+    RenderMenu(menuState.ActiveMenu, &graphics);
 
     while (1)
     {        
-        ProcessMenus(&menuState, &matrix);
+        ProcessMenus(&menuState, &graphics);
          
         if( USBGetDeviceState() < CONFIGURED_STATE )
         {
@@ -221,9 +224,9 @@ int main(void)
                 
                     char y = (activeLine * 8);
                     
-                    PG_FillRectangle(&matrix, 0, y, 32, y + 8, Black);
+                    PG_FillRectangle(&graphics, 0, y, 32, y + 8, Black);
                            
-                    PG_DrawText(&matrix, p, x, y, color, Black, &Font1);        
+                    PG_DrawText(&graphics, p, x, y, color, Black, &Font1);        
                 }
 
             }

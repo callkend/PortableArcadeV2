@@ -1,7 +1,5 @@
 
 
-#include "../PixiPusher/PixiPixel.h"
-#include "../PixiPusher/PixiMatrix.h"
 #include "../PixiPusher/PixiGFX.h"
 #include "../PixiPusher/Color.h"
 
@@ -12,28 +10,27 @@
 
 extern const PGfxFont Font1;
 
-void RenderMenuLine(PixiMatrix *matrix, char *text, int line, Color color){
+void RenderMenuLine(PixiGFX *graphics, char *text, int line, Color color){
 
     char x = PG_GetTextLength(text, &Font1);
     x = 15 - (x >> 1);
 
     char y = (line * 8);
 
-    PG_FillRectangle(matrix, 0, y, 32, y + 8, Black);
+    PG_FillRectangle(graphics, 0, y, 32, y + 8, Black);
 
-    PG_DrawText(matrix, text, x, y, color, Black, &Font1);     
+    PG_DrawText(graphics, text, x, y, color, Black, &Font1);     
 }
 
-void RenderMenu(Menu_t *menu, PixiMatrix *matrix){
+void RenderMenu(Menu_t *menu, PixiGFX *graphics){
     
     char p[MAX_MENU_NAME_LENGTH];
-    const static Color color = { .R = 32, .G = 0, .B = 0, .A = 0xFF };
 
     if (menu->SubMenus == NULL){
         strcpy(p, "Error:");
-        RenderMenuLine(matrix, p, 0, color);
+        RenderMenuLine(graphics, p, 0, Orange);
         strcpy(p, "No Sub");
-        RenderMenuLine(matrix, p, 1, color);
+        RenderMenuLine(graphics, p, 1, Orange);
         
     } else {
         int i;
@@ -43,16 +40,16 @@ void RenderMenu(Menu_t *menu, PixiMatrix *matrix){
             const char* name = menu->SubMenus[j++].Name;
             if (j > 0 && name != NULL) {
                 strcpy(p, name);
-                RenderMenuLine(matrix, p, i, color);
+                RenderMenuLine(graphics, p, i, i == 1 ? Blue : Red);
             } else {
                 p[0] = 0x00;
-                RenderMenuLine(matrix, p, i, color);
+                RenderMenuLine(graphics, p, i, Red);
             }
         }
     }
 }
 
-void ProcessMenus(MenuState_t *state, PixiMatrix *matrix){
+void ProcessMenus(MenuState_t *state, PixiGFX *graphics){
     if (state->ActiveLoop != NULL)
     {
         if (state->ActiveLoop() == 0){
@@ -60,7 +57,7 @@ void ProcessMenus(MenuState_t *state, PixiMatrix *matrix){
         }
         
         state->ActiveLoop = NULL;
-        RenderMenu(state->ActiveMenu, matrix);
+        RenderMenu(state->ActiveMenu, graphics);
     } else {
         static UserInput_t lastInput = { .AllBits = 0xFF };
         
@@ -96,7 +93,7 @@ void ProcessMenus(MenuState_t *state, PixiMatrix *matrix){
                 }
             }
             
-            RenderMenu(state->ActiveMenu, matrix);
+            RenderMenu(state->ActiveMenu, graphics);
         }
     }
 }
