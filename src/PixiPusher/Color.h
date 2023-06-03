@@ -19,6 +19,7 @@ typedef struct {
 
 const static Color Black = { .R = 0, .G = 0, .B = 0, .A = 0xFF };
 const static Color Red = { .R = 255, .G = 0, .B = 0, .A = 0xFF };
+const static Color Orange = { .R = 255, .G = 64, .B = 0, .A = 0xFF };
 const static Color Green = { .R = 0, .G = 255, .B = 0, .A = 0xFF };
 const static Color Blue = { .R = 0, .G = 0, .B = 255, .A = 0xFF };
 const static Color LowestWhite = { .R = 1, .G = 1, .B = 1, .A = 0xFF };
