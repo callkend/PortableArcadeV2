@@ -123,7 +123,7 @@ extern "C" {
 
 #define DEFINE_MENU_FUNCTION(name, setup, loop)   \
 {                                                 \
-    .Name = "",                                   \
+    .Name = name,                                 \
     .ActiveSubMenuIndex = 0,                      \
     .SubMenus = NULL,                             \
     .ParentMenu = NULL,                           \

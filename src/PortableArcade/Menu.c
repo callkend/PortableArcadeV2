@@ -31,6 +31,8 @@ void RenderMenu(Menu_t *menu, PixiGFX *graphics){
         RenderMenuLine(graphics, p, 0, Orange);
         strcpy(p, "No Sub");
         RenderMenuLine(graphics, p, 1, Orange);
+        strcpy(p, "");
+        RenderMenuLine(graphics, p, 2, Orange);
         
     } else {
         int i;
@@ -67,11 +69,12 @@ void ProcessMenus(MenuState_t *state, PixiGFX *graphics){
         {
             if (input.JoyRight){
                 // If the menu has a loop, then process the loop
-                if (state->ActiveMenu->Loop != NULL) {
-                    if (state->ActiveMenu->Setup != NULL){
-                        state->ActiveMenu->Setup(graphics);
+                Menu_t selectedSubMenu = state->ActiveMenu->SubMenus[state->ActiveMenu->ActiveSubMenuIndex];
+                if (selectedSubMenu.Loop != NULL) {
+                    if (selectedSubMenu.Setup != NULL){
+                        selectedSubMenu.Setup(graphics);
                     }
-                    state->ActiveLoop = state->ActiveMenu->Loop;
+                    state->ActiveLoop = selectedSubMenu.Loop;
 
                     PG_Fill(graphics, Black);
                     return;
