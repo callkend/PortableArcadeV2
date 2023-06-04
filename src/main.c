@@ -66,6 +66,8 @@ uint8_t DisplayArray[LEDCount * PixelSize];
 
 extern const PGfxFont Font1;
 
+MenuReturn ManuallyAdjustBrightness(PixiGFX * graphics);
+
 Menu_t snakeMenu[] = {
     DEFINE_MENU("Easy", NULL),    
     DEFINE_MENU("Hard", NULL),
@@ -73,7 +75,7 @@ Menu_t snakeMenu[] = {
 };
 
 Menu_t configMenu[] = {
-    DEFINE_MENU("Bright", NULL),
+    DEFINE_MENU_FUNCTION("Bright", NULL, ManuallyAdjustBrightness),
     DEFINE_EMPTY_MENU(),
 };
 
@@ -84,6 +86,34 @@ Menu_t menu_1[] = {
     DEFINE_EMPTY_MENU(),
 };
 
+MenuReturn ManuallyAdjustBrightness(PixiGFX * graphics) {
+
+    UserInput_t input = ReadUserInputs();
+
+    if (input.JoyInputs != input.LastJoyInputs) {
+        
+        if (input.JoyUp) {
+            if (graphics->Brightness < 7) {
+                PG_SetBrightness(graphics, graphics->Brightness + 1);
+            }
+
+        } else if (input.JoyDown) {
+            if (graphics->Brightness > 1) {
+                PG_SetBrightness(graphics, graphics->Brightness - 1);
+            }
+
+        } else if (input.JoyLeft) {
+            return Exit;
+        }
+
+        PG_DrawNumber(graphics, graphics->Brightness, 
+                (graphics->Matrix->Width >> 1) - 3,
+                (graphics->Matrix->Height >> 1) - 4,
+                White, Black, &Font1);
+    }
+
+    return Continue;
+}
 
 /*
                          Main application
