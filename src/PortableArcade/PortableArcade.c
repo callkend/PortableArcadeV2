@@ -86,10 +86,10 @@ void ResetArcade(void) {
 
 UserInput_t ReadUserInputs(void) {
 
-    static uint8_t lastBits = 0xFF;
+    static uint8_t lastBits = 0x00;
 
     UserInput_t result = {
-        .AllBits = EXTNIN1,
+        .AllBits = ~EXTNIN1,
         .LastBits = lastBits,
     };
 

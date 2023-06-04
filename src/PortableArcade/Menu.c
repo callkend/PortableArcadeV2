@@ -62,9 +62,9 @@ void ProcessMenus(MenuState_t *state, PixiGFX *graphics){
         UserInput_t input = ReadUserInputs();
 
         // Only process the input if the state has changed
-        if (input.AllBits != input.LastBits)
+        if (input.JoyInputs != input.LastJoyInputs)
         {
-            if (!input.JoyRight){
+            if (input.JoyRight){
                 // If the menu has a loop, then process the loop
                 if (state->ActiveMenu->Loop != NULL) {
                     if (state->ActiveMenu->Setup != NULL){
@@ -76,16 +76,16 @@ void ProcessMenus(MenuState_t *state, PixiGFX *graphics){
 
                     state->ActiveMenu = &state->ActiveMenu->SubMenus[state->ActiveMenu->ActiveSubMenuIndex];
                 }
-            } else if (!input.JoyLeft) {
+            } else if (input.JoyLeft) {
                 if (state->ActiveMenu->ParentMenu != NULL){
                     state->ActiveMenu = state->ActiveMenu->ParentMenu;
                 }
 
-            } else if (!input.JoyUp) {
+            } else if (input.JoyUp) {
                 if (state->ActiveMenu->ActiveSubMenuIndex > 0){
                     --state->ActiveMenu->ActiveSubMenuIndex;
                 }
-            } else if (!input.JoyDown){
+            } else if (input.JoyDown){
                 if (state->ActiveMenu->SubMenus[state->ActiveMenu->ActiveSubMenuIndex + 1].Name[0] != '\x00'){
                     ++state->ActiveMenu->ActiveSubMenuIndex;
                 }

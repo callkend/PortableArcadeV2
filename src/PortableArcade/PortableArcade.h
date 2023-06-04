@@ -14,8 +14,7 @@ extern "C" {
 
     typedef union UserInput_t
     {
-      struct
-      {
+      struct {
         bool JoyLeft :1;
         bool JoyRight:1;
         bool JoyUp   :1;
@@ -26,8 +25,16 @@ extern "C" {
         bool Button4 :1;
  
       };
-      struct 
-      {
+
+      struct {
+        uint8_t JoyInputs        : 4;
+        uint8_t ButtonInputs     : 4;
+        
+        uint8_t LastJoyInputs    : 4;
+        uint8_t LastButtonInputs : 4;
+      };
+
+      struct {
         uint8_t AllBits  : 8;
         uint8_t LastBits : 8;
       };
