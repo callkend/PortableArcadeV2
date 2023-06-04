@@ -73,8 +73,14 @@ extern "C" {
 
 #define MAX_MENU_NAME_LENGTH 12
     
-    typedef void (*MenuSetupHandle)(PixiGFX *graphics);
-    typedef int (*MenuLoopHandle)(PixiGFX *graphics);
+    typedef enum {
+        Exit,
+        Continue,
+        Error
+    } MenuReturn;
+
+    typedef MenuReturn (*MenuSetupHandle)(PixiGFX *graphics);
+    typedef MenuReturn (*MenuLoopHandle)(PixiGFX *graphics);
 
     typedef struct Menu {
         const char Name[MAX_MENU_NAME_LENGTH];
@@ -115,7 +121,7 @@ extern "C" {
     .Loop = NULL,                   \
 }
 
-#define DEFINE_MENU_FUNCTION(name, startup, loop) \
+#define DEFINE_MENU_FUNCTION(name, setup, loop)   \
 {                                                 \
     .Name = "",                                   \
     .ActiveSubMenuIndex = 0,                      \
