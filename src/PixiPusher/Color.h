@@ -17,6 +17,7 @@ typedef struct {
     uint8_t A;
 } Color;
 
+const static Color White = { .R = 255, .G = 255, .B = 255, .A = 0xFF };
 const static Color Black = { .R = 0, .G = 0, .B = 0, .A = 0xFF };
 const static Color Red = { .R = 255, .G = 0, .B = 0, .A = 0xFF };
 const static Color Orange = { .R = 255, .G = 64, .B = 0, .A = 0xFF };
