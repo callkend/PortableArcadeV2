@@ -79,7 +79,7 @@ Menu_t configMenu[] = {
     DEFINE_EMPTY_MENU(),
 };
 
-Menu_t menu_1[] = {
+Menu_t mainMenuSubs[] = {
     DEFINE_MENU("Snake", snakeMenu),
     DEFINE_MENU("Tetris", NULL),
     DEFINE_MENU("Config", configMenu),
@@ -130,7 +130,7 @@ int main(void)
 
     extern uint16_t PixelMap[];
 
-    Menu_t mainMenu = DEFINE_MENU("Main Menu", menu_1);
+    Menu_t mainMenu = DEFINE_MENU("Main Menu", mainMenuSubs);
     MenuState_t menuState = {
         .ActiveMenu = &mainMenu,
         .ActiveLoop = NULL,
