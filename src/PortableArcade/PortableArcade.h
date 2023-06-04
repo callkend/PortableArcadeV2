@@ -16,18 +16,20 @@ extern "C" {
     {
       struct
       {
-        bool JoyLeft:1;
+        bool JoyLeft :1;
         bool JoyRight:1;
-        bool JoyUp:1;
-        bool JoyDown:1;
-        bool Button1:1;
-        bool Button2:1;
-        bool Button3:1;
-        bool Button4:1;
+        bool JoyUp   :1;
+        bool JoyDown :1;
+        bool Button1 :1;
+        bool Button2 :1;
+        bool Button3 :1;
+        bool Button4 :1;
+ 
       };
       struct 
       {
-        uint8_t AllBits;
+        uint8_t AllBits  : 8;
+        uint8_t LastBits : 8;
       };
     } UserInput_t;
 

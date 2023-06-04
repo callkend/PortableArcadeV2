@@ -85,9 +85,15 @@ void ResetArcade(void) {
 }
 
 UserInput_t ReadUserInputs(void) {
+
+    static uint8_t lastBits = 0xFF;
+
     UserInput_t result = {
         .AllBits = EXTNIN1,
+        .LastBits = lastBits,
     };
+
+    lastBits = result.AllBits;
 
     return result;
 }

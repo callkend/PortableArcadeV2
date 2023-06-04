@@ -73,8 +73,8 @@ extern "C" {
 
 #define MAX_MENU_NAME_LENGTH 12
     
-    typedef void (*MenuSetupHandle)(void);
-    typedef int (*MenuLoopHandle)(void);
+    typedef void (*MenuSetupHandle)(PixiGFX *graphics);
+    typedef int (*MenuLoopHandle)(PixiGFX *graphics);
 
     typedef struct Menu {
         const char Name[MAX_MENU_NAME_LENGTH];

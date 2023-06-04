@@ -52,26 +52,24 @@ void RenderMenu(Menu_t *menu, PixiGFX *graphics){
 void ProcessMenus(MenuState_t *state, PixiGFX *graphics){
     if (state->ActiveLoop != NULL)
     {
-        if (state->ActiveLoop() == 0){
+        if (state->ActiveLoop(graphics) == 0){
             return;
         }
         
         state->ActiveLoop = NULL;
         RenderMenu(state->ActiveMenu, graphics);
-    } else {
-        static UserInput_t lastInput = { .AllBits = 0xFF };
-        
+    } else {        
         UserInput_t input = ReadUserInputs();
 
         // Only process the input if the state has changed
-        if (input.AllBits != lastInput.AllBits)
+        if (input.AllBits != input.LastBits)
         {
-            lastInput.AllBits = input.AllBits;
-
             if (!input.JoyRight){
                 // If the menu has a loop, then process the loop
                 if (state->ActiveMenu->Loop != NULL) {
-                    state->ActiveMenu->Setup();
+                    if (state->ActiveMenu->Setup != NULL){
+                        state->ActiveMenu->Setup(graphics);
+                    }
                     state->ActiveLoop = state->ActiveMenu->Loop;
                 } else {
                     state->ActiveMenu->SubMenus[state->ActiveMenu->ActiveSubMenuIndex].ParentMenu = state->ActiveMenu;
