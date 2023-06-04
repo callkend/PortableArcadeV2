@@ -38,6 +38,9 @@
         <itemPath>PixiPusher/PixiGFX.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f2" displayName="PortableArcade" projectFiles="true">
+        <logicalFolder name="f1" displayName="Games" projectFiles="true">
+          <itemPath>PortableArcade/Games/Tetris.h</itemPath>
+        </logicalFolder>
         <itemPath>PortableArcade/PortableArcade.h</itemPath>
         <itemPath>PortableArcade/LCDText.h</itemPath>
         <itemPath>PortableArcade/Menu.h</itemPath>
@@ -81,6 +84,9 @@
         <itemPath>PixiPusher/PixiGFX.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f2" displayName="PortableArcade" projectFiles="true">
+        <logicalFolder name="f1" displayName="Games" projectFiles="true">
+          <itemPath>PortableArcade/Games/Tetris.c</itemPath>
+        </logicalFolder>
         <itemPath>PortableArcade/PortableArcade.c</itemPath>
         <itemPath>PortableArcade/Menu.c</itemPath>
       </logicalFolder>
