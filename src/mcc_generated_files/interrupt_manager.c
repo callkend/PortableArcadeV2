@@ -55,5 +55,8 @@ void INTERRUPT_Initialize (void)
     //    USBI: USB1 - USB1 Interrupt
     //    Priority: 1
         IPC21bits.USB1IP = 1;
+    //    TI: T2 - Timer2
+    //    Priority: 1
+        IPC1bits.T2IP = 1;
 
 }

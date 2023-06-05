@@ -52,6 +52,7 @@
 #include <stdbool.h>
 #include "interrupt_manager.h"
 #include "traps.h"
+#include "tmr2.h"
 #include "usb/usb.h"
 
 #ifndef _XTAL_FREQ
