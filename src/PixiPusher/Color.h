@@ -10,11 +10,16 @@
 
 #include <stdint.h>
 
-typedef struct {
-    uint8_t R;
-    uint8_t G;
-    uint8_t B;
-    uint8_t A;
+typedef union {
+    struct {
+        uint8_t R;
+        uint8_t G;
+        uint8_t B;
+        uint8_t A;
+    };
+    struct {
+        uint32_t Word;
+    };
 } Color;
 
 const static Color White = { .R = 255, .G = 255, .B = 255, .A = 0xFF };

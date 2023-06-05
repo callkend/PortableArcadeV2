@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "Color.h"
 #include "PixiPixel.h"
@@ -229,6 +230,13 @@ int PG_DrawText(PixiGFX *graphics, char *text, int cursorX, int cursorY, Color f
     }
 
     return cursorX;
+}
+
+int PG_DrawTextC(PixiGFX *graphics, const char *text, int cursorX, int cursorY, Color foreColor, Color backColor, const PGfxFont *font) {
+
+    char *c;
+    strcpy(c, text);
+    return PG_DrawText(graphics, c, cursorX, cursorY, foreColor, backColor, font);
 }
 
 uint16_t PG_GetTextLength(char *text, const PGfxFont *font)

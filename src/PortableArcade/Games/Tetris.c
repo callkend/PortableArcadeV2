@@ -8,6 +8,8 @@ Tetris
 #include "../../PixiPusher/PixiGFX.h"
 
 #include "../PortableArcade.h"
+#include "../Menu.h"
+#include "Games.h"
 
 #define POINTS_PER_SHAPE 4
 
@@ -25,6 +27,9 @@ Tetris
 #define PlayerStartingY 0
 #define StartingDownBeat 300
 
+extern PixiGFX *graphics;
+extern const PGfxFont Font1;
+
 GameState_e GameState = PRE_GAME;
 
 const Color LINE_COLOR =         { .R =  17, .G = 157, .B = 242, .A = 0xFF };
@@ -36,6 +41,7 @@ const Color NORMAL_T_COLOR =     { .R = 184, .G =  24, .B = 134, .A = 0xFF };
 const Color SQUARE_COLOR =       { .R = 252, .G = 189, .B =  26, .A = 0xFF };
 const Color BACKGROUND_COLOR =   { .R =   0, .G =   0, .B =   0, .A = 0xFF };
 const Color WALL_COLOR =         { .R = 119, .G = 119, .B = 119, .A = 0xFF };
+const Color TEXT_COLOR =         { .R = 255, .G =  94, .B =  21, .A = 0xFF };
 
 const Color GAMEOVER_COLORS[] = {
     { .R = 255, .G = 0, .B = 0, .A = 0xFF },
@@ -107,50 +113,54 @@ Shape_t GetRandomShape(void)
     case LINE:
         result.Color = LINE_COLOR;
         result.Points[0].X = 0; result.Points[0].Y = 3;
-        result.Points[2] = {0, -1};
-        result.Points[3] = {0, -3};
+        result.Points[1].X = 0; result.Points[1].Y = 1;
+        result.Points[2].X = 0; result.Points[2].Y = -1;
+        result.Points[3].X = 0; result.Points[3].Y = -3;
         break;
     case NORMAL_L:
         result.Color = NORMAL_L_COLOR;
-        result.Points[0] = {-1, -2};
-        result.Points[1] = {-1, 0};
-        result.Points[2] = {-1, 2};
-        result.Points[3] = {1, 2};
+        result.Points[0].X = -1; result.Points[0].Y = -2;
+        result.Points[1].X = -1; result.Points[1].Y = 0;
+        result.Points[2].X = -1; result.Points[2].Y = 2;
+        result.Points[3].X = 1; result.Points[3].Y = 2;
         break;
     case BACKWARDS_L:
         result.Color = BACKWARD_L_COLOR;
-        result.Points[0] = {1, -2};
-        result.Points[1] = {1, 0};
-        result.Points[2] = {-1, 2};
-        result.Points[3] = {1, 2};
+        result.Points[0].X = 1; result.Points[0].Y = -2;
+        result.Points[1].X = 1; result.Points[1].Y = 0;
+        result.Points[2].X = -1; result.Points[2].Y = 2;
+        result.Points[3].X = 1; result.Points[3].Y = 2;
         break;
     case NORMAL_T:
         result.Color = NORMAL_T_COLOR;
-        result.Points[0] = {0, -1};
-        result.Points[1] = {-2, 1};
-        result.Points[2] = {0, 1};
-        result.Points[3] = {2, 1};
+        result.Points[0].X = 0; result.Points[0].Y = -1;
+        result.Points[1].X = -2; result.Points[1].Y = 1;
+        result.Points[2].X = 0; result.Points[2].Y = 1;
+        result.Points[3].X = 2; result.Points[3].Y = 1;
         break;
     case NORMAL_Z:
         result.Color = NORMAL_Z_COLOR;
-        result.Points[0] = {-2, -1};
-        result.Points[1] = {0, -1};
-        result.Points[2] = {0, 1};
-        result.Points[3] = {2, 1};
+        result.Points[0].X = -2; result.Points[0].Y = -1;
+        result.Points[1].X = 0; result.Points[1].Y = -1;
+        result.Points[2].X = 0; result.Points[2].Y = 1;
+        result.Points[3].X = 2; result.Points[3].Y = 1;
         break;
     case BACKWARDS_Z:
         result.Color = BACKWARD_Z_COLOR;
-        result.Points[0] = {0, -1};
-        result.Points[1] = {2, -1};
-        result.Points[2] = {-2, 1};
-        result.Points[3] = {0, 1};
+        result.Points[0].X = 0; result.Points[0].Y = -1;
+        result.Points[1].X = 2; result.Points[1].Y = -1;
+        result.Points[2].X = -2; result.Points[2].Y = 1;
+        result.Points[3].X = 0; result.Points[3].Y = 1;
         break;
     case SQUARE:
         result.Color = SQUARE_COLOR;
-        result.Points[0] = {1, -1};
-        result.Points[3] = {1, 1};
-        result.Points[1] = {-1, -1};
-        result.Points[2] = {-1, 1};
+        result.Points[0].X = 1; result.Points[0].Y = -1;
+        result.Points[3].X = 1; result.Points[3].Y = 1;
+        result.Points[1].X = -1; result.Points[1].Y = -1;
+        result.Points[2].X = -1; result.Points[2].Y = 1;
+        break;
+    case NO_SHAPE:
+        // TODO: Display some error
         break;
     }
     return result;
@@ -224,8 +234,8 @@ Location_t *PlotShape(Location_t center, Shape_t shape)
         location.X = location.X >> 1;
         location.Y = location.Y >> 1;
 
-        result[y] = {(int8_t)(location.X + (int8_t)center.X),
-                     (int8_t)(location.Y + (int8_t)center.Y)};
+        result[y].X = (int8_t)(location.X + (int8_t)center.X);
+        result[y].Y = (int8_t)(location.Y + (int8_t)center.Y);
     }
 
     return result;
@@ -236,12 +246,12 @@ Location_t *PlotShape(Location_t center, Shape_t shape)
  * @param count The number of points in the array to draw
  * @param color The color to set the specified points
  */
-void DrawPoints(Location_t *points, int count, int color)
+void DrawPoints(Location_t *points, int count, Color color)
 {
 
     for (int y = 0; y < count; y++)
     {
-        matrix.drawPixel(points->X, points->Y, color);
+        PG_SetPixel(graphics, points->X, points->Y, color);
         ++points;
     }
 }
@@ -260,7 +270,7 @@ void DrawShape(Location_t center, Shape_t shape)
  */
 void DrawPreview(Shape_t shape)
 {
-    matrix.fillRect(PreviewOffsetX, PreviewOffsetY,
+    PG_FillRectangle(graphics, PreviewOffsetX, PreviewOffsetY,
                     PreviewSizeX, PreviewSizeY, BACKGROUND_COLOR);
 
     const Location_t previewCenter = {PreviewOffsetX + 1,
@@ -278,32 +288,13 @@ void ClearShape(Location_t center, Shape_t shape)
     DrawPoints(PlotShape(center, shape), POINTS_PER_SHAPE, BACKGROUND_COLOR);
 }
 
-/** @brief Takes a given X,Y cord and returns the liner address in the matrix
- * @param location The X,Y cord to interpret
- */
-uint8_t GetLinerAddress(Location_t location)
-{
-    uint8_t address = (location.Y << 4) + location.X;
-
-    // Correct for the ZigZag in the LED Array
-    if (!bitRead(address, 4))
-    {
-        address ^= 0x0F;
-    }
-
-    return address;
-}
-
 /** @brief gets the RAW color from a given location 
  * @param location The location to get the RAW color from
  * @returns The raw color from the given location
  */
-uint32_t GetPixel(Location_t location)
+Color GetPixel(Location_t location)
 {
-    uint8_t address = GetLinerAddress(location);
-    //matrix.setPixelColor(address, LINE_COLOR);
-    // Maybe add code to make this uint32_t color the same as the uint16_t colors
-    return matrix.getPixelColor(address);
+    return PG_GetPixel(graphics, location.X, location.Y);
 }
 
 /** @brief Checks if any lines in the play area are filled, clears the full rows,
@@ -324,9 +315,9 @@ uint8_t LineErase()
         {
             playableSpace.X = x;
 
-            uint32_t pixel = GetPixel(playableSpace);
+            Color pixel = GetPixel(playableSpace);
 
-            if (pixel != BACKGROUND_COLOR)
+            if (pixel.Word != BACKGROUND_COLOR.Word)
             {
                 ++fillCount;
             }
@@ -335,9 +326,9 @@ uint8_t LineErase()
             {
                 Location_t shiftAddress = playableSpace;
                 shiftAddress.Y = shiftAddress.Y + linesCleared;
-                uint8_t laddr = GetLinerAddress(shiftAddress);
+                
                 // Shift pixel
-                matrix.setPixelColor(laddr, pixel);
+                PG_SetPixel(graphics, shiftAddress.X, shiftAddress.Y, pixel);
             }
         }
 
@@ -396,7 +387,7 @@ bool PointCollides(Location_t *points, Location_t point)
     }
     else
     {
-        return GetPixel(point) != BACKGROUND_COLOR;
+        return GetPixel(point).Word != BACKGROUND_COLOR.Word;
     }
 }
 
@@ -507,7 +498,7 @@ bool CheckFit(Location_t playerPostion, Shape_t shape)
         {
             return false;
         }
-        else if (GetPixel(point) != BACKGROUND_COLOR)
+        else if (GetPixel(point).Word != BACKGROUND_COLOR.Word)
         {
             return false;
         }
@@ -519,10 +510,11 @@ bool CheckFit(Location_t playerPostion, Shape_t shape)
 MenuReturn tetrisSetup(PixiGFX *graphics)
 {
     //Serial.begin(9600);
-    randomSeed(analogRead(0));
+    srand(1);   // TODO: Seed this thing!
     GameState = PRE_GAME;
     //Initializes the LED matrix, clears it, and setups the IO
-    initPortableArcade(&matrix);
+    ResetArcade();
+    return Exit;
 }
 
 MenuReturn tetrisLoop(PixiGFX *graphics)
@@ -540,8 +532,6 @@ MenuReturn tetrisLoop(PixiGFX *graphics)
     // Tracks how often to force a shape down one
     static uint16_t downBeat;
 
-    static uint8_t frame = 0;
-
     static uint16_t score;
 
     static uint16_t linesCleared;
@@ -550,22 +540,7 @@ MenuReturn tetrisLoop(PixiGFX *graphics)
     {
     case PRE_GAME:
     {
-        static int8_t textIndex = 0;
-
-        matrix.fillScreen(BACKGROUND_COLOR);
-        matrix.setCursor(textIndex, 0);
-
-        // Displays how to select the hard difficulty.
-        matrix.setTextColor(matrix.Color(255, 93, 21));
-        matrix.print("Tetris");
-        matrix.setCursor(textIndex, 8);
-
-        if (--textIndex < -34)
-        {
-            textIndex = matrix.width();
-        }
-
-        matrix.show();
+        PG_Fill(graphics, BACKGROUND_COLOR);
 
         if (GetDirection() != NO_DIRECTION)
         {
@@ -576,7 +551,7 @@ MenuReturn tetrisLoop(PixiGFX *graphics)
             GameState = START_GAME;
         }
         
-        delay(50);
+        // delay(50); // TODO: Figure out Delay
     }
 
     break;
@@ -585,14 +560,13 @@ MenuReturn tetrisLoop(PixiGFX *graphics)
         playerOffset.X = PlayerStartingX;
         playerOffset.Y = PlayerStartingY;
 
-        matrix.fill(BACKGROUND_COLOR);
+        PG_Fill(graphics, BACKGROUND_COLOR);
         nextShape = GetRandomShape();
         DrawPreview(nextShape);
-        matrix.drawLine(0, 0, 0, 15, WALL_COLOR);
-        matrix.drawLine(11, 0, 11, 15, WALL_COLOR);
-        matrix.fillRect(11, 6, 15, 15, WALL_COLOR);
+        PG_DrawVerticalLine(graphics, 0, 0, 15, WALL_COLOR);
+        PG_DrawVerticalLine(graphics, 11, 0, 15, WALL_COLOR);
+        PG_DrawHorizontalLine(graphics, 11, 6, 15, WALL_COLOR);
         currentShape = GetRandomShape();
-        matrix.show();
 
         GameState = RUNNING_GAME;
         lastShape.Name = NO_SHAPE;
@@ -602,7 +576,8 @@ MenuReturn tetrisLoop(PixiGFX *graphics)
 
         downBeat = StartingDownBeat;
 
-        ResetScoreAndBonus();
+        ResetArcade();
+
         break;
 
     case RUNNING_GAME:
@@ -681,6 +656,9 @@ MenuReturn tetrisLoop(PixiGFX *graphics)
                 updateShape = true;
             }
             break;
+            
+            case NO_DIRECTION:
+                break;
             }
         }
 
@@ -719,10 +697,10 @@ MenuReturn tetrisLoop(PixiGFX *graphics)
 
                     const uint8_t scores[] = {0, 1, 4, 9, 16};
                     score += scores[lc];
-                    SetScore(score);
+                    UpdateScoreBoard(score);
 
                     linesCleared += lc;
-                    SetBonus(linesCleared);
+                    UpdateBonusBoard(linesCleared);
                     
                     // Increase the game speed every ten rows cleared
                     downBeat = StartingDownBeat - ((linesCleared / 10) * 20);
@@ -752,36 +730,28 @@ MenuReturn tetrisLoop(PixiGFX *graphics)
             lastShape = currentShape;
 
             DrawShape(playerOffset, currentShape);
-            matrix.show();
         }
 
-        delay(1);
+        // delay(1); // TODO: Figure out Delay
     }
     break;
     case END_GAME:
     {
-        static int8_t textIndex = 0;
-        static int8_t pass = 0;
-
-        matrix.fillScreen(BACKGROUND_COLOR);
-        matrix.setCursor(textIndex, 0);
-        matrix.print(F("Gameover"));
+        static int textIndex = 0;
+        static int pass = 0;
 
         if (--textIndex < -46)
         {
-            textIndex = matrix.width();
+            textIndex = graphics->Matrix->Width;
             if (++pass >= 3)
             {
                 pass = 0;
                 GameState = PRE_GAME;
             }
-
-            matrix.setTextColor(GAMEOVER_COLORS[pass]);
         }
 
-        matrix.setCursor(0, 8);
-        matrix.print(score);
-        matrix.show();
+        PG_Fill(graphics, BACKGROUND_COLOR);
+        PG_DrawTextC(graphics, "Gameover", textIndex, 8, GAMEOVER_COLORS[pass], Transparent, &Font1);
 
         if (GetDirection() != NO_DIRECTION && pass > 0)
         {
@@ -792,7 +762,7 @@ MenuReturn tetrisLoop(PixiGFX *graphics)
             return false;
         }
 
-        delay(50);
+        // delay(50); // TODO: Figure out delay
     }
     break;
     }

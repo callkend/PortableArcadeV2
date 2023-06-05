@@ -28,14 +28,10 @@
 
 // This is a guard condition so that contents of this file are not included
 // more than once.  
-#ifndef MENU_H
-#define	MENU_H
+#ifndef GAMES
+#define	GAMES
 
-#include <xc.h> // include processor files - each processor file is guarded.
-
-#ifndef PIXI_PUSHER_H
-#include "../PixiPusher/PixiGFX.h"
-#endif
+#include <xc.h> // include processor files - each processor file is guarded.  
 
 // TODO Insert appropriate #include <>
 
@@ -71,73 +67,16 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#define MAX_MENU_NAME_LENGTH 12
-    
     typedef enum {
-        Exit,
-        Continue,
-        Error
-    } MenuReturn;
-
-    typedef MenuReturn (*MenuSetupHandle)(PixiGFX *graphics);
-    typedef MenuReturn (*MenuLoopHandle)(PixiGFX *graphics);
-
-    typedef struct Menu {
-        const char Name[MAX_MENU_NAME_LENGTH];
-
-        int ActiveSubMenuIndex;
-
-        struct Menu *SubMenus;
-
-        struct Menu *ParentMenu;
-
-        MenuLoopHandle Loop;
-        MenuSetupHandle Setup;
-        
-    } Menu_t;
-
-    typedef struct MenuState {
-        Menu_t *ActiveMenu;
-        MenuLoopHandle ActiveLoop;
-    } MenuState_t;
-
-#define DEFINE_MENU(name, subMenus) \
-{                                   \
-    .Name = name,                   \
-    .ActiveSubMenuIndex = 0,        \
-    .SubMenus = subMenus,           \
-    .ParentMenu = NULL,             \
-    .Setup = NULL,                  \
-    .Loop = NULL,                   \
-}
-    
-#define DEFINE_EMPTY_MENU()         \
-{                                   \
-    .Name = "",                     \
-    .ActiveSubMenuIndex = 0,        \
-    .SubMenus = NULL,               \
-    .ParentMenu = NULL,             \
-    .Setup = NULL,                  \
-    .Loop = NULL,                   \
-}
-
-#define DEFINE_MENU_FUNCTION(name, setup, loop)   \
-{                                                 \
-    .Name = name,                                 \
-    .ActiveSubMenuIndex = 0,                      \
-    .SubMenus = NULL,                             \
-    .ParentMenu = NULL,                           \
-    .Setup = setup,                               \
-    .Loop = loop,                                 \
-}
-    
-void ProcessMenus(MenuState_t *state, PixiGFX *graphics);
-
-void RenderMenu(Menu_t *menu, PixiGFX *graphics);
+        PRE_GAME,
+        START_GAME,
+        RUNNING_GAME,
+        END_GAME
+    } GameState_e;
 
 #ifdef	__cplusplus
 }
 #endif /* __cplusplus */
 
-#endif	/* MENU_H */
+#endif	/* GAMES */
 

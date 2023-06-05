@@ -40,6 +40,14 @@ extern "C" {
       };
     } UserInput_t;
 
+    typedef enum {
+        NO_DIRECTION,
+        UP,
+        DOWN,
+        LEFT,
+        RIGHT
+    } Direction_e;
+    
     void ClearScoreBoard(void);
 
     void UpdateScoreBoard(uint16_t value);
@@ -51,6 +59,8 @@ extern "C" {
     void ResetArcade(void);
     
     UserInput_t ReadUserInputs(void);
+    
+    Direction_e GetDirection(void);
 
 #ifdef	__cplusplus
 }

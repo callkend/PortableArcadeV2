@@ -60,11 +60,15 @@
 #include "PortableArcade/PortableArcade.h"
 #include "PortableArcade/Menu.h"
 
+#include "PortableArcade/Games/Tetris.h"
+
 #define LEDCount (768)
 
 uint8_t DisplayArray[LEDCount * PixelSize];
 
 extern const PGfxFont Font1;
+
+PixiGFX *graphics;
 
 MenuReturn ManuallyAdjustBrightness(PixiGFX * graphics);
 
@@ -81,7 +85,7 @@ Menu_t configMenu[] = {
 
 Menu_t mainMenuSubs[] = {
     DEFINE_MENU("Snake", snakeMenu),
-    DEFINE_MENU("Tetris", NULL),
+    DEFINE_MENU_FUNCTION("Tetris", tetrisSetup, tetrisLoop),
     DEFINE_MENU("Config", configMenu),
     DEFINE_EMPTY_MENU(),
 };
@@ -152,8 +156,9 @@ int main(void)
     char activeLine = 0;
 
     PixiMatrix matrix = PM_Init(32, 24, DisplayArray, PixelMap);
-    PixiGFX graphics = PG_Init(&matrix);
-    PG_SetBrightness(&graphics, 3);
+    PixiGFX g = PG_Init(&matrix);
+    graphics = &g;
+    PG_SetBrightness(graphics, 3);
     
     Color color = { .R = 0, .G = 0, .B = 255, .A = 0xFF };
     
@@ -161,11 +166,11 @@ int main(void)
     
     ResetArcade();
     
-    RenderMenu(menuState.ActiveMenu, &graphics);
+    RenderMenu(menuState.ActiveMenu, graphics);
 
     while (1)
     {        
-        ProcessMenus(&menuState, &graphics);
+        ProcessMenus(&menuState, graphics);
          
         if( USBGetDeviceState() < CONFIGURED_STATE )
         {
@@ -254,9 +259,9 @@ int main(void)
                 
                     char y = (activeLine * 8);
                     
-                    PG_FillRectangle(&graphics, 0, y, 32, y + 8, Black);
+                    PG_FillRectangle(graphics, 0, y, 32, y + 8, Black);
                            
-                    PG_DrawText(&graphics, p, x, y, color, Black, &Font1);        
+                    PG_DrawText(graphics, p, x, y, color, Black, &Font1);        
                 }
 
             }

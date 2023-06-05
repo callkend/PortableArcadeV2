@@ -98,6 +98,23 @@ UserInput_t ReadUserInputs(void) {
     return result;
 }
 
+Direction_e GetDirection(void) {
+    
+    UserInput_t userInput = ReadUserInputs();
+    
+    if (userInput.JoyLeft) {
+        return LEFT;
+    } else if (userInput.JoyRight) {
+        return RIGHT;
+    } else if (userInput.JoyUp) {
+        return UP;
+    } else if (userInput.JoyRight) {
+        return DOWN;
+    } else {
+        return NO_DIRECTION;
+    }
+}
+
 bool SDCardPresent(void) {
     return (EXTNIN2 & 0x01) == 0;
 }
