@@ -234,7 +234,7 @@ int PG_DrawText(PixiGFX *graphics, char *text, int cursorX, int cursorY, Color f
 
 int PG_DrawTextC(PixiGFX *graphics, const char *text, int cursorX, int cursorY, Color foreColor, Color backColor, const PGfxFont *font) {
 
-    char *c;
+    char c[32];
     strcpy(c, text);
     return PG_DrawText(graphics, c, cursorX, cursorY, foreColor, backColor, font);
 }

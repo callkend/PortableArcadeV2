@@ -507,17 +507,19 @@ bool CheckFit(Location_t playerPostion, Shape_t shape)
     return true;
 }
 
-MenuReturn tetrisSetup(PixiGFX *graphics)
+MenuResult tetrisSetup(PixiGFX *graphics)
 {
     //Serial.begin(9600);
     srand(1);   // TODO: Seed this thing!
     GameState = PRE_GAME;
     //Initializes the LED matrix, clears it, and setups the IO
     ResetArcade();
-    return Exit;
+
+    MenuResult result = { .MenuReturn = Exit, .NextDelay = 20 };
+    return result;
 }
 
-MenuReturn tetrisLoop(PixiGFX *graphics)
+MenuResult tetrisLoop(PixiGFX *graphics)
 {
     static Shape_t currentShape;
     static Shape_t nextShape;
@@ -536,6 +538,8 @@ MenuReturn tetrisLoop(PixiGFX *graphics)
 
     static uint16_t linesCleared;
 
+    MenuResult result = { .MenuReturn = Continue, .NextDelay = 1 };
+
     switch (GameState)
     {
     case PRE_GAME:
@@ -545,13 +549,12 @@ MenuReturn tetrisLoop(PixiGFX *graphics)
         if (GetDirection() != NO_DIRECTION)
         {
             // Wait for the user to put the joystick back in the center
-            while (GetDirection() != NO_DIRECTION)
-                ;
+            while (GetDirection() != NO_DIRECTION);
 
             GameState = START_GAME;
         }
         
-        // delay(50); // TODO: Figure out Delay
+        result.NextDelay = 50;
     }
 
     break;
@@ -563,9 +566,9 @@ MenuReturn tetrisLoop(PixiGFX *graphics)
         PG_Fill(graphics, BACKGROUND_COLOR);
         nextShape = GetRandomShape();
         DrawPreview(nextShape);
-        PG_DrawVerticalLine(graphics, 0, 0, 15, WALL_COLOR);
-        PG_DrawVerticalLine(graphics, 11, 0, 15, WALL_COLOR);
-        PG_DrawHorizontalLine(graphics, 11, 6, 15, WALL_COLOR);
+        PG_DrawVerticalLine(graphics, GameOffsetX - 1, GameOffsetY, GameSizeY - 1, WALL_COLOR);
+        PG_DrawVerticalLine(graphics, GameSizeX + GameOffsetX, GameOffsetY, GameSizeY - 1, WALL_COLOR);
+        PG_FillRectangle(graphics, GameSizeX + GameOffsetX + 1, PreviewSizeY + 2, GameSizeX - 1, GameSizeY - 1, WALL_COLOR);
         currentShape = GetRandomShape();
 
         GameState = RUNNING_GAME;
@@ -731,8 +734,6 @@ MenuReturn tetrisLoop(PixiGFX *graphics)
 
             DrawShape(playerOffset, currentShape);
         }
-
-        // delay(1); // TODO: Figure out Delay
     }
     break;
     case END_GAME:
@@ -759,13 +760,15 @@ MenuReturn tetrisLoop(PixiGFX *graphics)
             while (GetDirection() != NO_DIRECTION);
 
             GameState = PRE_GAME;
-            return false;
+
+            result.MenuReturn = Exit;
+            return result;
         }
 
-        // delay(50); // TODO: Figure out delay
+        result.NextDelay = 50;
     }
     break;
     }
 
-    return true;
+    return result;
 }

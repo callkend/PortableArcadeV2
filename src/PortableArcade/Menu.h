@@ -79,8 +79,13 @@ extern "C" {
         Error
     } MenuReturn;
 
-    typedef MenuReturn (*MenuSetupHandle)(PixiGFX *graphics);
-    typedef MenuReturn (*MenuLoopHandle)(PixiGFX *graphics);
+    typedef struct {
+        MenuReturn MenuReturn;
+        int NextDelay;
+    } MenuResult;
+
+    typedef MenuResult (*MenuSetupHandle)(PixiGFX *graphics);
+    typedef MenuResult (*MenuLoopHandle)(PixiGFX *graphics);
 
     typedef struct Menu {
         const char Name[MAX_MENU_NAME_LENGTH];
@@ -131,7 +136,7 @@ extern "C" {
     .Loop = loop,                                 \
 }
     
-void ProcessMenus(MenuState_t *state, PixiGFX *graphics);
+int ProcessMenus(MenuState_t *state, PixiGFX *graphics);
 
 void RenderMenu(Menu_t *menu, PixiGFX *graphics);
 

@@ -7,9 +7,9 @@
 // extern "C" {
 #endif
 
-    MenuReturn tetrisSetup(PixiGFX *graphics);
+    MenuResult tetrisSetup(PixiGFX *graphics);
 
-    MenuReturn tetrisLoop(PixiGFX *graphics);
+    MenuResult tetrisLoop(PixiGFX *graphics);
 
 #ifdef	__cplusplus
 // }

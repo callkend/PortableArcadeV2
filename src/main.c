@@ -50,6 +50,7 @@
 
 #include "mcc_generated_files/system.h"
 #include "mcc_generated_files/usb/usb.h"
+#include "mcc_generated_files/tmr2.h"
 
 #include "PixiPusher/PixiPixel.h"
 #include "PixiPusher/PixiMatrix.h"
@@ -70,7 +71,25 @@ extern const PGfxFont Font1;
 
 PixiGFX *graphics;
 
-MenuReturn ManuallyAdjustBrightness(PixiGFX * graphics);
+MenuState_t menuState;
+
+typedef int (*TaskHandle)(void);
+
+typedef struct
+{
+    TaskHandle Handle;
+    uint8_t Tick;
+    uint8_t Top;
+} Task_t;
+
+#define DEFINE_TASK(handle, tick, top) \
+    {                                  \
+        .Handle = handle,              \
+        .Tick = tick,                  \
+        .Top = top                     \
+    }
+
+MenuResult ManuallyAdjustBrightness(PixiGFX * graphics);
 
 Menu_t snakeMenu[] = {
     DEFINE_MENU("Easy", NULL),    
@@ -90,9 +109,10 @@ Menu_t mainMenuSubs[] = {
     DEFINE_EMPTY_MENU(),
 };
 
-MenuReturn ManuallyAdjustBrightness(PixiGFX * graphics) {
+MenuResult ManuallyAdjustBrightness(PixiGFX * graphics) {
 
     UserInput_t input = ReadUserInputs();
+    MenuResult result = { .MenuReturn = Continue, .NextDelay = 20 };
 
     if (input.JoyInputs != input.LastJoyInputs) {
         
@@ -107,7 +127,8 @@ MenuReturn ManuallyAdjustBrightness(PixiGFX * graphics) {
             }
 
         } else if (input.JoyLeft) {
-            return Exit;
+            result.MenuReturn = Exit;
+            return result;
         }
 
         PG_DrawNumber(graphics, graphics->Brightness, 
@@ -116,7 +137,53 @@ MenuReturn ManuallyAdjustBrightness(PixiGFX * graphics) {
                 White, Black, &Font1);
     }
 
-    return Continue;
+    return result;
+}
+
+int MenuTask(void) {
+
+    return ProcessMenus(&menuState, graphics);
+}
+
+Task_t Tasks[] = {
+    DEFINE_TASK(MenuTask, 0, 20),
+};
+
+uint8_t tasksSize = sizeof(Tasks) / sizeof(Tasks[1]);
+bool tasksTicked = false;
+
+void Timer2_Tick(void) {
+
+    for (uint8_t i = 0; i < tasksSize; ++i)
+    {
+        ++Tasks[i].Tick;
+    }
+
+    tasksTicked = true;
+}
+
+void ProcessTasks(void)
+{
+    if (tasksTicked) {
+        tasksTicked = false;
+
+        Task_t *task;
+
+        for (uint8_t i = 0; i < tasksSize; ++i)
+        {
+            task = &Tasks[i];
+
+            if (task->Tick >= task->Top)
+            {
+                task->Tick = 0;
+                int nextTop = task->Handle();
+
+                if (nextTop > 0) {
+                    task->Top = nextTop;
+                }
+            }
+        }
+    }
 }
 
 /*
@@ -135,10 +202,8 @@ int main(void)
     extern uint16_t PixelMap[];
 
     Menu_t mainMenu = DEFINE_MENU("Main Menu", mainMenuSubs);
-    MenuState_t menuState = {
-        .ActiveMenu = &mainMenu,
-        .ActiveLoop = NULL,
-    };
+    menuState.ActiveMenu = &mainMenu;
+    menuState.ActiveLoop = NULL;
      
 #define TextLineLength 16
 #define LineCount 3
@@ -168,10 +233,12 @@ int main(void)
     
     RenderMenu(menuState.ActiveMenu, graphics);
 
+    TMR2_SetInterruptHandler(&Timer2_Tick);
+
     while (1)
-    {        
-        ProcessMenus(&menuState, graphics);
-         
+    {
+        ProcessTasks();
+
         if( USBGetDeviceState() < CONFIGURED_STATE )
         {
             continue;

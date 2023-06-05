@@ -51,12 +51,12 @@ void RenderMenu(Menu_t *menu, PixiGFX *graphics){
     }
 }
 
-void ProcessMenus(MenuState_t *state, PixiGFX *graphics){
+int ProcessMenus(MenuState_t *state, PixiGFX *graphics) {
     if (state->ActiveLoop != NULL)
     {
-        MenuReturn returnCode = state->ActiveLoop(graphics);
-        if (returnCode == Continue){
-            return;
+        MenuResult loopReturn = state->ActiveLoop(graphics);
+        if (loopReturn.MenuReturn == Continue){
+            return loopReturn.NextDelay;
         }
         
         state->ActiveLoop = NULL;
@@ -77,7 +77,7 @@ void ProcessMenus(MenuState_t *state, PixiGFX *graphics){
                     state->ActiveLoop = selectedSubMenu.Loop;
 
                     PG_Fill(graphics, Black);
-                    return;
+                    return 20;
                 } else {
                     state->ActiveMenu->SubMenus[state->ActiveMenu->ActiveSubMenuIndex].ParentMenu = state->ActiveMenu;
 
@@ -101,5 +101,7 @@ void ProcessMenus(MenuState_t *state, PixiGFX *graphics){
             RenderMenu(state->ActiveMenu, graphics);
         }
     }
+
+    return 20;
 }
 
