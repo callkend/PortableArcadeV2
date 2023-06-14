@@ -18,7 +18,10 @@ typedef union {
         uint8_t A;
     };
     struct {
-        uint32_t Word;
+        uint32_t RGB  : 24;
+    };
+    struct {
+        uint32_t RGBA : 32;
     };
 } Color;
 

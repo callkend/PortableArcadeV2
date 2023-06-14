@@ -19,12 +19,12 @@ Tetris
 #define PreviewSizeY 4
 
 #define GameOffsetX 1
-#define GameOffsetY 0
+#define GameOffsetY 2
 #define GameSizeX 10
-#define GameSizeY 16
+#define GameSizeY 20
 
 #define PlayerStartingX (GameOffsetX + 4)
-#define PlayerStartingY 0
+#define PlayerStartingY (GameOffsetY + 1)
 #define StartingDownBeat 300
 
 extern PixiGFX *graphics;
@@ -85,8 +85,8 @@ typedef struct
 // /** @brief A positive integer location on the array. */
 typedef struct
 {
-    int8_t X : 5;
-    int8_t Y : 5;
+    int8_t X;
+    int8_t Y;
 
 } Location_t;
 
@@ -251,7 +251,13 @@ void DrawPoints(Location_t *points, int count, Color color)
 
     for (int y = 0; y < count; y++)
     {
-        PG_SetPixel(graphics, points->X, points->Y, color);
+        Color c = PG_GetPixel(graphics, points->X, points->Y);
+
+        // Don't draw on the boarder
+        if (c.RGB != WALL_COLOR.RGB){
+            PG_SetPixel(graphics, points->X, points->Y, color);
+        }
+
         ++points;
     }
 }
@@ -271,10 +277,11 @@ void DrawShape(Location_t center, Shape_t shape)
 void DrawPreview(Shape_t shape)
 {
     PG_FillRectangle(graphics, PreviewOffsetX, PreviewOffsetY,
-                    PreviewSizeX, PreviewSizeY, BACKGROUND_COLOR);
+                    PreviewOffsetX + PreviewSizeX, PreviewOffsetY + PreviewSizeY, 
+                    BACKGROUND_COLOR);
 
-    const Location_t previewCenter = {PreviewOffsetX + 1,
-                                      PreviewOffsetY + 2};
+    const Location_t previewCenter = {PreviewOffsetX + (PreviewSizeX >> 1),
+                                      PreviewOffsetY + (PreviewSizeY >> 1)};
 
     DrawShape(previewCenter, shape);
 }
@@ -306,29 +313,24 @@ uint8_t LineErase()
     uint8_t linesCleared = 0;
     int fillCount;
 
-    Location_t playableSpace;
     for (int y = (GameOffsetY + GameSizeY - 1); y >= GameOffsetY; --y)
     {
-        playableSpace.Y = y;
         fillCount = 0;
         for (int x = GameOffsetX; x < (GameOffsetX + GameSizeX); ++x)
         {
-            playableSpace.X = x;
+            Color pixel = PG_GetPixel(graphics, x, y);
 
-            Color pixel = GetPixel(playableSpace);
-
-            if (pixel.Word != BACKGROUND_COLOR.Word)
+            if (pixel.RGB != BACKGROUND_COLOR.RGB)
             {
                 ++fillCount;
             }
 
             if (linesCleared > 0)
             {
-                Location_t shiftAddress = playableSpace;
-                shiftAddress.Y = shiftAddress.Y + linesCleared;
+                int8_t shiftY = y + linesCleared;
                 
                 // Shift pixel
-                PG_SetPixel(graphics, shiftAddress.X, shiftAddress.Y, pixel);
+                PG_SetPixel(graphics, x, shiftY, pixel);
             }
         }
 
@@ -387,7 +389,7 @@ bool PointCollides(Location_t *points, Location_t point)
     }
     else
     {
-        return GetPixel(point).Word != BACKGROUND_COLOR.Word;
+        return GetPixel(point).RGB != BACKGROUND_COLOR.RGB;
     }
 }
 
@@ -498,7 +500,7 @@ bool CheckFit(Location_t playerPostion, Shape_t shape)
         {
             return false;
         }
-        else if (GetPixel(point).Word != BACKGROUND_COLOR.Word)
+        else if (GetPixel(point).RGB != BACKGROUND_COLOR.RGB)
         {
             return false;
         }
@@ -546,12 +548,14 @@ MenuResult tetrisLoop(PixiGFX *graphics)
     {
         PG_Fill(graphics, BACKGROUND_COLOR);
 
-        if (GetDirection() != NO_DIRECTION)
+        Direction_e direction = GetDirection();
+        if (direction != NO_DIRECTION)
         {
-            // Wait for the user to put the joystick back in the center
-            while (GetDirection() != NO_DIRECTION);
-
-            GameState = START_GAME;
+            if (direction == LEFT) {
+                result.MenuReturn = Exit;
+            } else {
+                GameState = START_GAME;
+            }
         }
         
         result.NextDelay = 50;
@@ -560,26 +564,33 @@ MenuResult tetrisLoop(PixiGFX *graphics)
     break;
     default:
     case START_GAME:
-        playerOffset.X = PlayerStartingX;
-        playerOffset.Y = PlayerStartingY;
+        if (GetDirection() == NO_DIRECTION) {
+            playerOffset.X = PlayerStartingX;
+            playerOffset.Y = PlayerStartingY;
 
-        PG_Fill(graphics, BACKGROUND_COLOR);
-        nextShape = GetRandomShape();
-        DrawPreview(nextShape);
-        PG_DrawVerticalLine(graphics, GameOffsetX - 1, GameOffsetY, GameSizeY - 1, WALL_COLOR);
-        PG_DrawVerticalLine(graphics, GameSizeX + GameOffsetX, GameOffsetY, GameSizeY - 1, WALL_COLOR);
-        PG_FillRectangle(graphics, GameSizeX + GameOffsetX + 1, PreviewSizeY + 2, GameSizeX - 1, GameSizeY - 1, WALL_COLOR);
-        currentShape = GetRandomShape();
+            PG_Fill(graphics, BACKGROUND_COLOR);
+            nextShape = GetRandomShape();
+            DrawPreview(nextShape);
 
-        GameState = RUNNING_GAME;
-        lastShape.Name = NO_SHAPE;
+            // Draw the game boarder
+            PG_DrawRectangle(graphics, GameOffsetX - 1,  GameOffsetY - 1, GameSizeX + GameOffsetX , GameOffsetY + GameSizeY, WALL_COLOR);
+            PG_FillRectangle(graphics, GameSizeX + GameOffsetX + 1, PreviewSizeY + 2, GameSizeX - 1, GameSizeY - 1, WALL_COLOR);
+            currentShape = GetRandomShape();
 
-        score = 0;
-        linesCleared = 0;
+            GameState = RUNNING_GAME;
+            lastShape.Name = NO_SHAPE;
 
-        downBeat = StartingDownBeat;
+            score = 0;
+            linesCleared = 0;
 
-        ResetArcade();
+            downBeat = StartingDownBeat;
+
+            ResetArcade();
+            UpdateScoreBoard(0);
+            UpdateBonusBoard(0);
+        }
+        
+        result.NextDelay = 50;
 
         break;
 
@@ -587,7 +598,7 @@ MenuResult tetrisLoop(PixiGFX *graphics)
     {
         // Move the shape left and right
         Direction_e currentDirection = GetDirection();
-        Collision_e collision = DetectCollision(playerOffset, currentShape);
+        Collision_e collision = DetectCollision(playerOffset, currentShape); 
 
         bool updateShape = false;
 
@@ -679,8 +690,9 @@ MenuResult tetrisLoop(PixiGFX *graphics)
                 {
                     Location_t point = shape[i];
 
-                    if (point.Y < 0)
+                    if (point.Y < GameOffsetY)
                     {
+                        PG_Fill(graphics, BACKGROUND_COLOR);
                         GameState = END_GAME;
                     }
                 }
@@ -751,18 +763,12 @@ MenuResult tetrisLoop(PixiGFX *graphics)
             }
         }
 
-        PG_Fill(graphics, BACKGROUND_COLOR);
-        PG_DrawTextC(graphics, "Gameover", textIndex, 8, GAMEOVER_COLORS[pass], Transparent, &Font1);
+        PG_DrawTextC(graphics, "Gameover", textIndex, 8, GAMEOVER_COLORS[pass], Black, &Font1);
 
         if (GetDirection() != NO_DIRECTION && pass > 0)
         {
-            // Wait for the user to put the joystick back in the center
-            while (GetDirection() != NO_DIRECTION);
-
             GameState = PRE_GAME;
-
             result.MenuReturn = Exit;
-            return result;
         }
 
         result.NextDelay = 50;

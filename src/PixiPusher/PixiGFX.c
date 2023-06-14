@@ -68,12 +68,12 @@ Color PG_GetPixel(PixiGFX *graphics, uint16_t x, uint16_t y)
 {
     uint8_t *pnt = &graphics->Layer1[PM_GetLinerOffset(graphics->Matrix, x, y)];
 
-    Color result = {
-        .A = 0xFF,
-        .G = *pnt++,
-        .R = *pnt++,
-        .B = *pnt,
-    };
+    Color result;
+    result.G = *pnt++;
+    result.R = *pnt++;
+    result.B = *pnt;
+    result.A = 0xFF;
+
     return result;
 }
 
@@ -147,8 +147,8 @@ void PG_DrawRectangle(PixiGFX *graphics, uint16_t sx, uint16_t sy, uint16_t ex, 
 {
     PG_DrawHorizontalLine(graphics, sx, ex, sy, c);
     PG_DrawHorizontalLine(graphics, sx, ex, ey, c);
-    PG_DrawVerticalLine(graphics, sx, sy + 1, ey - 1, c);
-    PG_DrawVerticalLine(graphics, ex, sy + 1, ey - 1, c);
+    PG_DrawVerticalLine(graphics, sx, sy + 1, ey, c);
+    PG_DrawVerticalLine(graphics, ex, sy, ey + 1, c);
 }
 
 void PG_FillRectangle(PixiGFX *graphics, uint16_t sx, uint16_t sy, uint16_t ex, uint16_t ey, Color c)

@@ -120,7 +120,7 @@ Direction_e GetDirection(void) {
         return RIGHT;
     } else if (userInput.JoyUp) {
         return UP;
-    } else if (userInput.JoyRight) {
+    } else if (userInput.JoyDown) {
         return DOWN;
     } else {
         return NO_DIRECTION;
