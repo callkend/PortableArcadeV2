@@ -21,6 +21,8 @@ __eds__ uint8_t __attribute__((noload, address(0x008010))) SCOREDISPLAY[8] __att
 
 __eds__ uint8_t __attribute__((noload, address(0x008018))) BONUSDISPLAY[8] __attribute__((space(eds)));
 
+ReadUserInputsHandle AlternateReadUserInput;
+
 void _update7Seg(uint16_t value, __eds__ uint8_t *board) {
     const uint8_t BCDToSeg[] = {LCD_0, LCD_1, LCD_2, LCD_3, LCD_4, LCD_5, LCD_6, LCD_7, LCD_8, LCD_9,
         LCD_A, LCD_B, LCD_C, LCD_D, LCD_E, LCD_F};
@@ -95,7 +97,17 @@ UserInput_t ReadUserInputs(void) {
 
     lastBits = result.AllBits;
 
+    if (result.AllBits == 0x00 && AlternateReadUserInput != 0x00)
+    {
+        result = AlternateReadUserInput();
+    }
+
     return result;
+}
+
+void SetAlternateUserInputHandle(ReadUserInputsHandle handle)
+{
+    AlternateReadUserInput = handle;
 }
 
 Direction_e GetDirection(void) {

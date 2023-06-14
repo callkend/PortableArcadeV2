@@ -48,6 +48,8 @@ extern "C" {
         RIGHT
     } Direction_e;
     
+    typedef UserInput_t (*ReadUserInputsHandle)(void);
+
     void ClearScoreBoard(void);
 
     void UpdateScoreBoard(uint16_t value);
@@ -59,6 +61,8 @@ extern "C" {
     void ResetArcade(void);
     
     UserInput_t ReadUserInputs(void);
+
+    void SetAlternateUserInputHandle(ReadUserInputsHandle handle);
     
     Direction_e GetDirection(void);
 

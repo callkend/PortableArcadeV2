@@ -186,6 +186,104 @@ void ProcessTasks(void)
     }
 }
 
+UserInput_t ReadUSBUserInputs(void)
+{
+    UserInput_t result = { .AllBits = 0x00 };
+
+    if( USBGetDeviceState() < CONFIGURED_STATE )
+    {
+        return result;
+    }
+
+    if( USBIsDeviceSuspended() == true )
+    {
+        return result;
+    }
+
+    if( USBUSARTIsTxTrfReady() == true)
+    {
+        static unsigned char readBuf[CDC_DATA_OUT_EP_SIZE]; //Buffer to store the incoming USB Data
+        unsigned int readCount;
+
+        readCount = getsUSBUSART(readBuf, CDC_DATA_OUT_EP_SIZE);
+
+        if (readCount > 0)
+        {
+            switch (readBuf[0])
+            {
+                case 'a':
+                case 'A':
+                {
+                    result.JoyLeft = 1;
+                    break;
+                }
+                    
+                case 's':
+                case 'S':
+                {
+                    result.JoyDown = 1;
+                    break;
+                }
+                
+                case 'd':
+                case 'D':
+                {
+                    result.JoyRight = 1;
+                    break;
+                }
+
+                case 'w':
+                case 'W':
+                {
+                    result.JoyUp = 1;
+                    break;
+                }
+                
+                // Handle escape codes
+                case '\x1b':
+                {
+                    if (readBuf[1] == '[')
+                    {
+                        switch (readBuf[2])
+                        {
+                            case 'C':
+                            {
+                                result.JoyLeft = 1;
+                                break;
+                            }
+
+                            case 'S':
+                            {
+                                result.JoyDown = 1;
+                                break;
+                            }
+
+                            case 'A':
+                            {
+                                result.JoyRight = 1;
+                                break;
+                            }
+
+                            case 'D':
+                            {
+                                result.JoyUp = 1;
+                                break;
+                            }
+                        }
+                    }
+                }
+                    
+                default:
+                {
+                    break;
+                }
+            }
+        }
+    }
+
+    return result;
+}
+
 /*
                          Main application
  */
@@ -205,27 +303,10 @@ int main(void)
     menuState.ActiveMenu = &mainMenu;
     menuState.ActiveLoop = NULL;
      
-#define TextLineLength 16
-#define LineCount 3
-    
-    char text[LineCount][TextLineLength];
-    
-    for (int y = 0; y < LineCount; ++y)
-    {
-        for (int x = 0; x < LineCount; ++x)
-        {
-            text[y][x] = 0x00;
-        }
-    }
-    
-    char activeLine = 0;
-
     PixiMatrix matrix = PM_Init(32, 24, DisplayArray, PixelMap);
     PixiGFX g = PG_Init(&matrix);
     graphics = &g;
     PG_SetBrightness(graphics, 3);
-    
-    Color color = { .R = 0, .G = 0, .B = 255, .A = 0xFF };
     
     PP_SetAutoUpdate(true);
     
@@ -235,109 +316,14 @@ int main(void)
 
     TMR2_SetInterruptHandler(&Timer2_Tick);
 
+    SetAlternateUserInputHandle(&ReadUSBUserInputs);
+
     while (1)
     {
         ProcessTasks();
 
-        if( USBGetDeviceState() < CONFIGURED_STATE )
-        {
-            continue;
-        }
-
-        if( USBIsDeviceSuspended() == true )
-        {
-            continue;
-        }
-
-        if( USBUSARTIsTxTrfReady() == true)
-        {
-            static unsigned char readBuf[CDC_DATA_OUT_EP_SIZE]; //Buffer to store the incoming USB Data
-            unsigned int readCount;
-
-            readCount = getsUSBUSART(readBuf, CDC_DATA_OUT_EP_SIZE);
-
-            if (readCount > 0)
-            {
-                char c = readBuf[0];
-                
-                switch (c)
-                {
-                    case '\n':
-                        break;
-                        
-                    case '\r':
-                        if (++activeLine >= LineCount)
-                        {
-                            activeLine = 0;
-                        }
-                        break;
-                    
-                    case '\x7F':
-                    case '\b':
-                    {
-                        char *p = text[activeLine];
-                        
-                        if (*p == 0x00)
-                        {
-                            if (activeLine > 0)
-                            {
-                                --activeLine;
-                            }
-                        }
-                        else
-                        {
-                            while (*p)
-                            {
-                                ++p;
-                            }
-
-                            --p;
-                            *p = 0x00;     
-                        }
-
-                    }
-                        break;
-                        
-                    default:
-                    {
-                        char *p = text[activeLine];
-                        
-                        while (*p)
-                        {
-                            ++p;
-                        }
-                        
-                        char length = p - text[activeLine];
-                        
-                        if (length < (TextLineLength - 1))
-                        {
-                            *p++ = c;
-                            *p = 0x00;
-                        }
-                    }
-                        break;
-                }
-                
-                {
-                    char *p = text[activeLine];
-                    
-                    char x = PG_GetTextLength(p, &Font1);
-                    x = 15 - (x >> 1);
-                
-                    char y = (activeLine * 8);
-                    
-                    PG_FillRectangle(graphics, 0, y, 32, y + 8, Black);
-                           
-                    PG_DrawText(graphics, p, x, y, color, Black, &Font1);        
-                }
-
-            }
-        }
-
         // PP_Service();
         CDCTxService();
-        
-        
     }
 
     return 1;
