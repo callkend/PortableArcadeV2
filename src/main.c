@@ -246,25 +246,25 @@ UserInput_t ReadUSBUserInputs(void)
                     {
                         switch (readBuf[2])
                         {
-                            case 'C':
+                            case 'D':
                             {
                                 result.JoyLeft = 1;
                                 break;
                             }
 
-                            case 'S':
+                            case 'B':
                             {
                                 result.JoyDown = 1;
                                 break;
                             }
 
-                            case 'A':
+                            case 'C':
                             {
                                 result.JoyRight = 1;
                                 break;
                             }
 
-                            case 'D':
+                            case 'A':
                             {
                                 result.JoyUp = 1;
                                 break;
