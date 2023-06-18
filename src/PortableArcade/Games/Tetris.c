@@ -540,7 +540,7 @@ MenuResult tetrisLoop(PixiGFX *graphics)
 
     static uint16_t linesCleared;
 
-    MenuResult result = { .MenuReturn = Continue, .NextDelay = 1 };
+    MenuResult result = { .MenuReturn = Continue, .NextDelay = 3 };
 
     switch (GameState)
     {
