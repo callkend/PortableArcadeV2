@@ -62,6 +62,7 @@
 #include "PortableArcade/Menu.h"
 
 #include "PortableArcade/Games/Tetris.h"
+#include "PortableArcade/Games/Snake.h"
 
 #define LEDCount (768)
 
