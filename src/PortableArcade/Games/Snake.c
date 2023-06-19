@@ -241,25 +241,25 @@ MenuResult snakeLoop(PixiGFX *graphics) {
                 switch (SnakeDirection) {
                     case UP:
                         --collisionLocation.Y;
-                        if (Snake.Head.Y == 0) {
+                        if (Snake.Head.Y <= SNAKE_GAME_OFFSET_Y) {
                             SnakeGameState = END_GAME;
                         }
                         break;
                     case DOWN:
                         ++collisionLocation.Y;
-                        if (Snake.Head.Y == 15) {
+                        if (Snake.Head.Y >= ((SNAKE_GAME_OFFSET_Y - 1) + SNAKE_GAME_SIZE_Y)) {
                             SnakeGameState = END_GAME;
                         }
                         break;
                     case LEFT:
                         --collisionLocation.X;
-                        if (Snake.Head.X == 0) {
+                        if (Snake.Head.X <= SNAKE_GAME_OFFSET_X) {
                             SnakeGameState = END_GAME;
                         }
                         break;
                     case RIGHT:
                         ++collisionLocation.X;
-                        if (Snake.Head.X == 15) {
+                        if (Snake.Head.X >= ((SNAKE_GAME_OFFSET_X - 1) + SNAKE_GAME_SIZE_X)) {
                             SnakeGameState = END_GAME;
                         }
                         break;
