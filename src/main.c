@@ -93,8 +93,8 @@ typedef struct
 MenuResult ManuallyAdjustBrightness(PixiGFX * graphics);
 
 Menu_t snakeMenu[] = {
-    DEFINE_MENU("Easy", NULL),    
-    DEFINE_MENU("Hard", NULL),
+    DEFINE_MENU_FUNCTION("Easy", snakeSetup, snakeLoop),    
+    DEFINE_MENU_FUNCTION("Hard", snakeSetup, snakeLoop),
     DEFINE_EMPTY_MENU(),
 };
 
