@@ -6,21 +6,21 @@
    The snake gets longer as the snake eats the cherries.
 */
 
-//Libaries
-#include <Adafruit_GFX.h>
-#include <Adafruit_NeoMatrix.h>
-#include <Adafruit_NeoPixel.h>
+//Libraries
+#include <stdlib.h>
 
-#include "portableArcade.h"
-#include "games.h"
+#include "../../PixiPusher/PixiGFX.h"
 
-#ifndef PSTR
-#define PSTR // Make Arduino Due happy
-#endif
-
-#define ZigZag
+#include "../PortableArcade.h"
+#include "../Menu.h"
+#include "Games.h"
 
 #define MAX_SNAKE_SIZE 256
+
+#define SNAKE_GAME_OFFSET_X 1
+#define SNAKE_GAME_OFFSET_Y 1
+#define SNAKE_GAME_SIZE_X 30
+#define SNAKE_GAME_SIZE_Y 22
 
 typedef enum
 {
@@ -40,13 +40,13 @@ typedef union
 {
   struct
   {
-    uint8_t X : 4;
-    uint8_t Y : 4;
+    uint8_t X : 8;
+    uint8_t Y : 8;
   };
 
   struct
   {
-    uint8_t A : 8;
+    uint16_t A : 16;
   };
 
 } SnakeLocation_t;
@@ -57,34 +57,30 @@ typedef struct
   SnakeLocation_t Head;
 } Snake_t;
 
-extern Adafruit_NeoMatrix matrix;
+extern PixiGFX *graphics;
+extern const PGfxFont Font1;
 
 // COOOOLOURS!!!
-//Sets Snake Color
-const uint16_t COLOR_RED = matrix.Color(255, 0, 0);
-//Sets Cherry Color
-const uint16_t COLOR_GREEN = matrix.Color(0, 255, 0);
-//Sets the Eat Self Color for Hard Mode.
-const uint16_t COLOR_BLUE = matrix.Color(0, 0, 255);
 
 // Sets GREEN, RED, BLUE rotating colors for scrolling text.
-const uint16_t colors[] = {COLOR_RED,
-                           COLOR_GREEN,
-                           COLOR_BLUE};
+// const Color colors[] = {   Red,
+//                            Green,
+//                            Blue};
 
 //Sets Snake Color
-const uint16_t SNAKE_COLOR = matrix.Color(255, 102, 0);
+const Color SNAKE_COLOR = { .R = 255, .G = 102, .B = 0, .A = 0xFF };
 //Sets Cherry Color
-const uint16_t CHERRY_COLOR = matrix.Color(255, 0, 0);
+const Color CHERRY_COLOR = { .R = 255, .G = 0, .B = 0, .A = 0xFF };
 //Sets the Eat Self Color for Hard Mode.
-const uint16_t GOBBLE_COLOR = matrix.Color(91, 215, 213);
+const Color GOBBLE_COLOR = { .R = 91, .G = 215, .B = 213, .A = 0xFF };
 
-const uint16_t BACKGROUND_COLOR = matrix.Color(0, 0, 0);
+const Color SNAKE_BACKGROUND_COLOR = { .R = 0, .G = 0, .B = 0, .A = 0xFF };
+const Color SNAKE_BORDER_COLOR = { .R = 16, .G = 16, .B = 16, .A = 0xFF };
 
 // Static Variables
 Snake_t Snake;
 SnakeLocation_t SnakeBody[MAX_SNAKE_SIZE];
-uint8_t SnakeHeadIndex = 0;
+uint16_t SnakeHeadIndex = 0;
 
 SnakeLocation_t Gobble, Cherry;
 
@@ -97,30 +93,17 @@ Direction_e SnakeDirection = NO_DIRECTION;
 Direction_e NextSnakeDirection = NO_DIRECTION;
 Direction_e LastDirection = NO_DIRECTION;
 
-boolean PRINT = true;
-int cursorIndex = matrix.width();
-
-int GetSnakePixel(SnakeLocation_t location)
+Color GetSnakePixel(SnakeLocation_t location)
 {
-  uint8_t address = location.A;
-
-#ifdef ZigZag
-  // Correct for the ZigZag in the LED Array
-  if (!bitRead(address, 4))
-  {
-    address ^= 0x0F;
-  }
-#endif
-  //matrix.setPixelColor(address, COLOR_BLUE);
-  return matrix.getPixelColor(address);
+  return PG_GetPixel(graphics, location.X, location.Y);
 }
 
-int SetPixel(SnakeLocation_t location, int color)
+void SetPixel(SnakeLocation_t location, Color color)
 {
-  matrix.drawPixel(location.X, location.Y, color);
+  PG_SetPixel(graphics, location.X, location.Y, color);
 }
 
-inline boolean LocationsEqual(SnakeLocation_t left, SnakeLocation_t right)
+bool LocationsEqual(SnakeLocation_t left, SnakeLocation_t right)
 {
   return left.A == right.A;
 }
@@ -136,7 +119,7 @@ SnakeCollision_e GetSnakeCollision(SnakeLocation_t location)
   {
     return GOBBLE_COLLISION;
   }
-  else if (GetSnakePixel(location) == BACKGROUND_COLOR)
+  else if (GetSnakePixel(location).RGB == SNAKE_BACKGROUND_COLOR.RGB)
   {
     return NO_COLLISION;
   }
@@ -149,12 +132,12 @@ SnakeCollision_e GetSnakeCollision(SnakeLocation_t location)
 SnakeLocation_t GetRandomLocation(void)
 {
   SnakeLocation_t result;
-  result.X = random(16);
-  result.Y = random(16);
+  result.X = SNAKE_GAME_OFFSET_X + (rand() % SNAKE_GAME_SIZE_X);
+  result.Y = SNAKE_GAME_OFFSET_Y + (rand() % SNAKE_GAME_SIZE_Y);
   return result;
 }
 
-SnakeLocation_t DrawRandomLocation(int color)
+SnakeLocation_t DrawRandomLocation(Color color)
 {
   SnakeLocation_t result = GetRandomLocation();
   SetPixel(result, color);
@@ -163,10 +146,14 @@ SnakeLocation_t DrawRandomLocation(int color)
 
 void ResetGame(void)
 {
-  ResetScoreAndBonus();
+  ResetArcade();
 
-  matrix.fillScreen(BACKGROUND_COLOR);
-  matrix.show();
+  PG_Fill(graphics, SNAKE_BACKGROUND_COLOR);
+  // Draw the game edge
+  PG_DrawRectangle(graphics, SNAKE_GAME_OFFSET_X - 1, SNAKE_GAME_OFFSET_Y - 1,
+                   SNAKE_GAME_OFFSET_X + SNAKE_GAME_SIZE_X, SNAKE_GAME_OFFSET_Y + SNAKE_GAME_SIZE_Y,
+                   SNAKE_BORDER_COLOR);
+  // matrix.show();
 
   LastDirection = NO_DIRECTION;
   SnakeDirection = NextSnakeDirection = DOWN;
@@ -186,24 +173,23 @@ void ResetGame(void)
   }
 }
 
-void snakeSetup()
+MenuResult snakeSetup(PixiGFX *graphics)
 {
   // put your setup code here, to run once:
 
   // Randomizes where the cherry starts
-  randomSeed(analogRead(0));
+  srand(1);   // TODO: Seed this thing!
 
   //Initializes the LED matrix, clears it, and setups the IO
-  initPortableArcade(&matrix);
+  ResetArcade();
 
-  // Allows for the arduino to talk to the computer.
-  //Serial.begin(9600);
+  MenuResult result = { .MenuReturn = Exit, .NextDelay = 20 };
+  return result;
 }
 
-bool snakeLoop()
+MenuResult snakeLoop(PixiGFX *graphics)
 {
-  // put your main code here, to run repeatedly:
-  delay(1);
+  MenuResult result = { .MenuReturn = Continue, .NextDelay = 1 };
 
   //Changes the Direction of the snake.
   Direction_e activeDirection = GetDirection();
@@ -242,32 +228,6 @@ bool snakeLoop()
     {
       hold = 100;
 
-      matrix.show();
-      matrix.fillScreen(0);
-      matrix.setCursor(cursorIndex, 0);
-
-      // Displays how to select the hard difficulty.
-      matrix.setTextColor(matrix.Color(255, 93, 21));
-      matrix.print("Hard");
-
-      int arrowCenter = cursorIndex + 27;
-      // Draw up arrow
-      matrix.drawLine(arrowCenter, 0, arrowCenter, 6, COLOR_RED);
-      matrix.drawLine(arrowCenter, 0, arrowCenter - 2, 2, COLOR_RED);
-      matrix.drawLine(arrowCenter, 0, arrowCenter + 2, 2, COLOR_RED);
-      matrix.setCursor(cursorIndex, 8);
-
-      // Displays how to select the easy difficulty.
-      matrix.print("Easy");
-      matrix.drawLine(arrowCenter, 15, arrowCenter, 8, COLOR_RED);
-      matrix.drawLine(arrowCenter, 15, arrowCenter - 2, 13, COLOR_RED);
-      matrix.drawLine(arrowCenter, 15, arrowCenter + 2, 13, COLOR_RED);
-
-      if (--cursorIndex < -29)
-      {
-        cursorIndex = matrix.width();
-      }
-
       // Grabs the player input if they select hard.
       /*
         * Hard Mode adds shedding to the game. If the Player hits the she--dded skin it will also end the game.
@@ -286,8 +246,11 @@ bool snakeLoop()
         Difficulty = EASY;
         SnakeGameState = START_GAME;
         break;
-        case LEFT:
-        return false;
+      case LEFT:
+        result.MenuReturn = Exit;
+        return result;
+      default:
+        break;
       }
 
       LastDirection = NO_DIRECTION;
@@ -336,6 +299,8 @@ bool snakeLoop()
           SnakeGameState = END_GAME;
         }
         break;
+      default:
+        break;
       }
 
       if (SnakeGameState == END_GAME)
@@ -354,7 +319,7 @@ bool snakeLoop()
         }
         else
         {
-          SetBonus(--gobblesStored);
+          UpdateBonusBoard(--gobblesStored);
           ++Snake.Length;
         }
         break;
@@ -364,7 +329,7 @@ bool snakeLoop()
         Cherry = DrawRandomLocation(CHERRY_COLOR);
 
         ++Snake.Length;
-        SetScore(++score);
+        UpdateScoreBoard(++score);
 
         if (hold > 100)
         {
@@ -375,7 +340,7 @@ bool snakeLoop()
       case GOBBLE_COLLISION:
 
         Gobble = DrawRandomLocation(GOBBLE_COLOR);
-        SetBonus(++gobblesStored);
+        UpdateBonusBoard(++gobblesStored);
         break;
 
       case NO_COLLISION:
@@ -404,7 +369,7 @@ bool snakeLoop()
       {
         SnakeLocation_t clearLocation = SnakeBody[tailPointer];
 
-        int color = BACKGROUND_COLOR;
+        Color color = SNAKE_BACKGROUND_COLOR;
 
         if (LocationsEqual(clearLocation, Cherry))
         {
@@ -418,13 +383,13 @@ bool snakeLoop()
         SetPixel(clearLocation, color);
       }
 
-      matrix.show();
+      // matrix.show();
     }
     break;
 
     case END_GAME:
-
-      static byte loopTimes = 0;
+    {
+      static uint8_t loopTimes = 0;
       hold = 100;
 
       // delay the matrix then repeat.
@@ -437,23 +402,24 @@ bool snakeLoop()
       {
         LastDirection = NO_DIRECTION;
 
-        matrix.fillScreen(0);
-        matrix.setCursor(cursorIndex, 0);
-        matrix.print(F("Gameover"));
+        // matrix.fillScreen(0);
+        // matrix.setCursor(cursorIndex, 0);
+        // matrix.print(F("Gameover"));
 
-        if (--cursorIndex < -46)
-        {
-          cursorIndex = matrix.width();
+        // if (--cursorIndex < -46)
+        // {
+        //   cursorIndex = matrix.width();
 
-          matrix.setTextColor(colors[loopTimes]);
-          ++loopTimes;
-        }
-        matrix.setCursor(0, 8);
-        matrix.print(score);
-        matrix.show();
+        //   matrix.setTextColor(colors[loopTimes]);
+        //   ++loopTimes;
+        // }
+        // matrix.setCursor(0, 8);
+        // matrix.print(score);
+        // matrix.show();
       }
+    }
       break;
     }
   }
-  return true;
+  return result;
 }
