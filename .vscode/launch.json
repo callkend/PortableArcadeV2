@@ -9,7 +9,7 @@
             "request": "launch",
             "name": "MPLABX Debug",
             "program": "${workspaceFolder}/src",
-            "stopOnEntry": true,
+            "stopOnEntry": false,
             "preLaunchTask": "MPLABX Build"
         }
     ]
