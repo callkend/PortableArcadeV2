@@ -139,8 +139,8 @@ void ResetGame(void) {
     LastDirection = NO_DIRECTION;
     SnakeDirection = NextSnakeDirection = DOWN;
 
-    Snake.Head.X = 5;
-    Snake.Head.Y = 5;
+    Snake.Head.X = SNAKE_GAME_OFFSET_X + (SNAKE_GAME_SIZE_X >> 1);
+    Snake.Head.Y = SNAKE_GAME_OFFSET_Y + (SNAKE_GAME_SIZE_Y >> 1);
     Snake.Length = 4;
 
     score = gobblesStored = 0;
