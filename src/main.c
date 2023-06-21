@@ -64,6 +64,8 @@
 #include "PortableArcade/Games/Tetris.h"
 #include "PortableArcade/Games/Snake.h"
 
+#include "PortableArcade/ArcadeTest.h"
+
 #define LEDCount (768)
 
 uint8_t DisplayArray[LEDCount * PixelSize];
@@ -92,6 +94,8 @@ typedef struct
 
 MenuResult ManuallyAdjustBrightness(PixiGFX * graphics);
 
+extern Menu_t testMenu[];
+
 Menu_t snakeMenu[] = {
     DEFINE_MENU_FUNCTION("Easy", snakeSetup, snakeLoop),    
     DEFINE_MENU_FUNCTION("Hard", snakeSetup, snakeLoop),
@@ -107,6 +111,7 @@ Menu_t mainMenuSubs[] = {
     DEFINE_MENU("Snake", snakeMenu),
     DEFINE_MENU_FUNCTION("Tetris", tetrisSetup, tetrisLoop),
     DEFINE_MENU("Config", configMenu),
+    DEFINE_MENU("Test", testMenu),
     DEFINE_EMPTY_MENU(),
 };
 

@@ -47,6 +47,7 @@
         <itemPath>PortableArcade/PortableArcade.h</itemPath>
         <itemPath>PortableArcade/LCDText.h</itemPath>
         <itemPath>PortableArcade/Menu.h</itemPath>
+        <itemPath>PortableArcade/ArcadeTest.h</itemPath>
       </logicalFolder>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
@@ -94,6 +95,7 @@
         </logicalFolder>
         <itemPath>PortableArcade/PortableArcade.c</itemPath>
         <itemPath>PortableArcade/Menu.c</itemPath>
+        <itemPath>PortableArcade/ArcadeTest.c</itemPath>
       </logicalFolder>
       <itemPath>main.c</itemPath>
       <itemPath>PortableArchade.c</itemPath>
