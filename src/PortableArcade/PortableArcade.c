@@ -81,9 +81,15 @@ void UpdateBonusBoard(uint16_t value) {
     _update7Seg(value, BONUSDISPLAY);
 }
 
-void ResetArcade(void) {
-    ClearScoreBoard();
-    ClearBonusBoard();
+void ResetArcade(bool zeroBoards) {
+
+    if (zeroBoards) {
+        UpdateScoreBoard(0);
+        UpdateBonusBoard(0);
+    } else {
+        ClearScoreBoard();
+        ClearBonusBoard();
+    }
 }
 
 UserInput_t ReadUserInputs(void) {

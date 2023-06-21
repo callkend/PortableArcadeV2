@@ -311,7 +311,7 @@ int main(void)
     
     PP_SetAutoUpdate(true);
     
-    ResetArcade();
+    ResetArcade(false);
     
     RenderMenu(menuState.ActiveMenu, graphics);
 

@@ -58,7 +58,7 @@ extern "C" {
     
     void UpdateBonusBoard(uint16_t value);
     
-    void ResetArcade(void);
+    void ResetArcade(bool zeroBoards);
     
     UserInput_t ReadUserInputs(void);
 

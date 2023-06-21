@@ -127,7 +127,7 @@ SnakeLocation_t DrawRandomLocation(Color color) {
 }
 
 void ResetGame(void) {
-    ResetArcade();
+    ResetArcade(true);
 
     PG_Fill(graphics, SNAKE_BACKGROUND_COLOR);
     // Draw the game edge
@@ -160,7 +160,7 @@ MenuResult snakeSetup(PixiGFX *graphics) {
     srand(1); // TODO: Seed this thing!
 
     //Initializes the LED matrix, clears it, and setups the IO
-    ResetArcade();
+    ResetArcade(true);
 
     MenuResult result = {.MenuReturn = Exit, .NextDelay = 20};
     return result;

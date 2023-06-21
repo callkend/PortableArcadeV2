@@ -515,7 +515,7 @@ MenuResult tetrisSetup(PixiGFX *graphics)
     srand(1);   // TODO: Seed this thing!
     GameState = PRE_GAME;
     //Initializes the LED matrix, clears it, and setups the IO
-    ResetArcade();
+    ResetArcade(true);
 
     MenuResult result = { .MenuReturn = Exit, .NextDelay = 20 };
     return result;
@@ -585,9 +585,7 @@ MenuResult tetrisLoop(PixiGFX *graphics)
 
             downBeat = StartingDownBeat;
 
-            ResetArcade();
-            UpdateScoreBoard(0);
-            UpdateBonusBoard(0);
+            ResetArcade(true);
         }
         
         result.NextDelay = 50;
