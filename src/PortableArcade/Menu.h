@@ -111,27 +111,27 @@ extern "C" {
     .Name = name,                   \
     .ActiveSubMenuIndex = 0,        \
     .SubMenus = subMenus,           \
-    .ParentMenu = NULL,             \
-    .Setup = NULL,                  \
-    .Loop = NULL,                   \
+    .ParentMenu = 0x0000,           \
+    .Setup = 0x0000,                \
+    .Loop = 0x0000,                 \
 }
     
 #define DEFINE_EMPTY_MENU()         \
 {                                   \
     .Name = "",                     \
     .ActiveSubMenuIndex = 0,        \
-    .SubMenus = NULL,               \
-    .ParentMenu = NULL,             \
-    .Setup = NULL,                  \
-    .Loop = NULL,                   \
+    .SubMenus = 0x0000,             \
+    .ParentMenu = 0x0000,           \
+    .Setup = 0x0000,                \
+    .Loop = 0x0000,                 \
 }
 
 #define DEFINE_MENU_FUNCTION(name, setup, loop)   \
 {                                                 \
     .Name = name,                                 \
     .ActiveSubMenuIndex = 0,                      \
-    .SubMenus = NULL,                             \
-    .ParentMenu = NULL,                           \
+    .SubMenus = 0x0000,                           \
+    .ParentMenu = 0x0000,                         \
     .Setup = setup,                               \
     .Loop = loop,                                 \
 }
