@@ -7,10 +7,6 @@
 // extern "C" {
 #endif
 
-    MenuResult snakeSetup(PixiGFX *graphics);
-
-    MenuResult snakeLoop(PixiGFX *graphics);
-
 #ifdef	__cplusplus
 // }
 #endif

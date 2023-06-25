@@ -254,6 +254,12 @@ uint16_t PG_GetTextLength(char *text, const PGfxFont *font)
     return --result;
 }
 
+uint16_t PG_GetTextLengthC(const char *text, const PGfxFont *font) {
+    char c[32];
+    strcpy(c, text);
+    return PG_GetTextLength(c, font);
+}
+
 int PG_DrawNumber(PixiGFX *graphics, int16_t number, int cursorX, int cursorY, Color foreColor, Color backColor, const PGfxFont *font)
 {
     const uint16_t decades[] = { 10000, 1000, 100, 10, 1, 0 };

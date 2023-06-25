@@ -28,9 +28,8 @@ Tetris
 #define StartingDownBeat 300
 
 extern PixiGFX *graphics;
-extern const PGfxFont Font1;
 
-GameState_e GameState = PRE_GAME;
+GameState_e TetrisGameState = PRE_GAME;
 
 const Color LINE_COLOR =         { .R =  17, .G = 157, .B = 242, .A = 0xFF };
 const Color NORMAL_L_COLOR =     { .R = 235, .G =  74, .B =   2, .A = 0xFF };
@@ -42,12 +41,6 @@ const Color SQUARE_COLOR =       { .R = 252, .G = 189, .B =  26, .A = 0xFF };
 const Color BACKGROUND_COLOR =   { .R =   0, .G =   0, .B =   0, .A = 0xFF };
 const Color WALL_COLOR =         { .R = 119, .G = 119, .B = 119, .A = 0xFF };
 const Color TEXT_COLOR =         { .R = 255, .G =  94, .B =  21, .A = 0xFF };
-
-const Color GAMEOVER_COLORS[] = {
-    { .R = 255, .G = 0, .B = 0, .A = 0xFF },
-    { .R = 0, .G = 255, .B = 0, .A = 0xFF },
-    { .R = 0, .G = 0, .B = 255, .A = 0xFF },
-};
 
 /** @brief A flags enum used to indicate where a shape has collided */
 typedef enum
@@ -513,7 +506,7 @@ MenuResult tetrisSetup(PixiGFX *graphics)
 {
     //Serial.begin(9600);
     srand(1);   // TODO: Seed this thing!
-    GameState = PRE_GAME;
+    TetrisGameState = PRE_GAME;
     //Initializes the LED matrix, clears it, and setups the IO
     ResetArcade(true);
 
@@ -542,22 +535,13 @@ MenuResult tetrisLoop(PixiGFX *graphics)
 
     MenuResult result = { .MenuReturn = Continue, .NextDelay = 3 };
 
-    switch (GameState)
+    switch (TetrisGameState)
     {
     case PRE_GAME:
     {
         PG_Fill(graphics, BACKGROUND_COLOR);
 
-        Direction_e direction = GetDirection();
-        if (direction != NO_DIRECTION)
-        {
-            if (direction == LEFT) {
-                result.MenuReturn = Exit;
-            } else {
-                GameState = START_GAME;
-            }
-        }
-        
+        TetrisGameState = START_GAME;
         result.NextDelay = 50;
     }
 
@@ -577,7 +561,7 @@ MenuResult tetrisLoop(PixiGFX *graphics)
             PG_FillRectangle(graphics, GameSizeX + GameOffsetX + 1, PreviewSizeY + 2, GameSizeX - 1, GameSizeY - 1, WALL_COLOR);
             currentShape = GetRandomShape();
 
-            GameState = RUNNING_GAME;
+            TetrisGameState = RUNNING_GAME;
             lastShape.Name = NO_SHAPE;
 
             score = 0;
@@ -691,12 +675,13 @@ MenuResult tetrisLoop(PixiGFX *graphics)
                     if (point.Y < GameOffsetY)
                     {
                         PG_Fill(graphics, BACKGROUND_COLOR);
-                        GameState = END_GAME;
+                        TetrisGameState = END_GAME;
+                        GameoverLoop(true);
                     }
                 }
 
                 // If the game isn't over, prep a new shape
-                if (GameState == RUNNING_GAME)
+                if (TetrisGameState == RUNNING_GAME)
                 {
                     playerOffset.Y = PlayerStartingY;
                     playerOffset.X = PlayerStartingX;
@@ -748,31 +733,19 @@ MenuResult tetrisLoop(PixiGFX *graphics)
     break;
     case END_GAME:
     {
-        static int textIndex = 0;
-        static int pass = 0;
+        result = GameoverLoop(false);
 
-        if (--textIndex < -46)
-        {
-            textIndex = graphics->Matrix->Width;
-            if (++pass >= 3)
-            {
-                pass = 0;
-                GameState = PRE_GAME;
-            }
+        if (result.MenuReturn == Exit) {
+            TetrisGameState = PRE_GAME;
         }
-
-        PG_DrawTextC(graphics, "Gameover", textIndex, 8, GAMEOVER_COLORS[pass], Black, &Font1);
-
-        if (GetDirection() != NO_DIRECTION && pass > 0)
-        {
-            GameState = PRE_GAME;
-            result.MenuReturn = Exit;
-        }
-
-        result.NextDelay = 50;
     }
     break;
     }
 
     return result;
 }
+
+Menu_t tetrisMenu[] = {
+    DEFINE_MENU_FUNCTION("Start", tetrisSetup, tetrisLoop),
+    DEFINE_EMPTY_MENU(),
+};

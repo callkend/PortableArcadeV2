@@ -62,7 +62,6 @@
 #include "PortableArcade/Menu.h"
 
 #include "PortableArcade/Games/Tetris.h"
-#include "PortableArcade/Games/Snake.h"
 
 #include "PortableArcade/ArcadeTest.h"
 
@@ -95,12 +94,8 @@ typedef struct
 MenuResult ManuallyAdjustBrightness(PixiGFX * graphics);
 
 extern Menu_t testMenu[];
-
-Menu_t snakeMenu[] = {
-    DEFINE_MENU_FUNCTION("Easy", snakeSetup, snakeLoop),    
-    DEFINE_MENU_FUNCTION("Hard", snakeSetup, snakeLoop),
-    DEFINE_EMPTY_MENU(),
-};
+extern Menu_t snakeMenu[];
+extern Menu_t tetrisMenu[];
 
 Menu_t configMenu[] = {
     DEFINE_MENU_FUNCTION("Bright", NULL, ManuallyAdjustBrightness),
@@ -109,7 +104,7 @@ Menu_t configMenu[] = {
 
 Menu_t mainMenuSubs[] = {
     DEFINE_MENU("Snake", snakeMenu),
-    DEFINE_MENU_FUNCTION("Tetris", tetrisSetup, tetrisLoop),
+    DEFINE_MENU("Tetris", tetrisMenu),
     DEFINE_MENU("Config", configMenu),
     DEFINE_MENU("Test", testMenu),
     DEFINE_EMPTY_MENU(),
@@ -302,6 +297,9 @@ int main(void)
     PP_InitChannel(4, DisplayArray, LEDCount, LowestWhite);
     
     Setup();
+
+    // Release MCLR on the D-FlipFlops
+    LATFbits.LATF5 = 1;
 
     extern uint16_t PixelMap[];
 

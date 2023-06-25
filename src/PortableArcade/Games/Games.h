@@ -74,6 +74,8 @@ extern "C" {
         END_GAME
     } GameState_e;
 
+    MenuResult GameoverLoop(bool reset);
+
 #ifdef	__cplusplus
 }
 #endif /* __cplusplus */

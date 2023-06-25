@@ -144,7 +144,7 @@ void ResetGame(void) {
     Snake.Length = 4;
 
     score = gobblesStored = 0;
-    hold = 500;
+    hold = 40;
 
     Cherry = DrawRandomLocation(CHERRY_COLOR);
 
@@ -166,8 +166,10 @@ MenuResult snakeSetup(PixiGFX *graphics) {
     return result;
 }
 
+Menu_t snakeMenu[];
+
 MenuResult snakeLoop(PixiGFX *graphics) {
-    MenuResult result = {.MenuReturn = Continue, .NextDelay = 1};
+    MenuResult result = { .MenuReturn = Continue, .NextDelay = 10 };
 
     //Changes the Direction of the snake.
     Direction_e activeDirection = GetDirection();
@@ -196,40 +198,24 @@ MenuResult snakeLoop(PixiGFX *graphics) {
             default:
             case PRE_GAME:
             {
-                hold = 100;
-
-                // Grabs the player input if they select hard.
                 /*
                  * Hard Mode adds shedding to the game. If the Player hits the she--dded skin it will also end the game.
                  * An new item is added to the game that allows the player to eat themselves and the shedded skin, but
                  * eating the item will increase the speed of the snake without increasing the score.
                  */
 
-                switch (LastDirection) {
-                    case UP:
-                        Difficulty = HARD;
-                        SnakeGameState = START_GAME;
-                        break;
-
-                    case DOWN:
-                        Difficulty = EASY;
-                        SnakeGameState = START_GAME;
-                        break;
-                    case LEFT:
-                        result.MenuReturn = Exit;
-                        return result;
-                    default:
-                        break;
-                }
-
+                Difficulty = snakeMenu[1].ActiveSubMenuIndex == 0 ? EASY : HARD;
+                SnakeGameState = START_GAME;
                 LastDirection = NO_DIRECTION;
-            }
                 break;
+            }
 
             case START_GAME:
+            {
                 ResetGame();
                 SnakeGameState = RUNNING_GAME;
                 break;
+            }
 
             case RUNNING_GAME:
             {
@@ -263,11 +249,13 @@ MenuResult snakeLoop(PixiGFX *graphics) {
                             SnakeGameState = END_GAME;
                         }
                         break;
-                    default:
+                    default:    
                         break;
                 }
 
                 if (SnakeGameState == END_GAME) {
+                    hold = 0;
+                    result = GameoverLoop(true);
                     break;
                 }
 
@@ -277,6 +265,8 @@ MenuResult snakeLoop(PixiGFX *graphics) {
                     case BODY_COLLISION:
                         if (gobblesStored == 0) {
                             SnakeGameState = END_GAME;
+                            hold = 0;
+                            result = GameoverLoop(false);
                         } else {
                             UpdateBonusBoard(--gobblesStored);
                             ++Snake.Length;
@@ -289,18 +279,19 @@ MenuResult snakeLoop(PixiGFX *graphics) {
 
                         ++Snake.Length;
                         UpdateScoreBoard(++score);
-
-                        if (hold > 100) {
-                            hold -= 10;
+                        UpdateBonusBoard(gobblesStored);  // TODO: Why is the score getting cleared here?
+                        if (hold > 10) {
+                            hold -= 1;
                         }
                         break;
 
                     case GOBBLE_COLLISION:
 
                         Gobble = DrawRandomLocation(GOBBLE_COLOR);
+                        UpdateScoreBoard(score);        // TODO: Why is the score getting cleared here?
                         UpdateBonusBoard(++gobblesStored);
                         break;
-
+                        
                     case NO_COLLISION:
                         // Nothing to do sir
                         break;
@@ -341,30 +332,11 @@ MenuResult snakeLoop(PixiGFX *graphics) {
 
             case END_GAME:
             {
-                static uint8_t loopTimes = 0;
-                hold = 100;
+                hold = 0;
+                result = GameoverLoop(false);
 
-                // delay the matrix then repeat.
-                if ((loopTimes >= 1 && (LastDirection == RIGHT || LastDirection == LEFT)) || loopTimes >= 3) {
-                    loopTimes = 0;
+                if (result.MenuReturn == Exit) {
                     SnakeGameState = PRE_GAME;
-                } else {
-                    LastDirection = NO_DIRECTION;
-
-                    // matrix.fillScreen(0);
-                    // matrix.setCursor(cursorIndex, 0);
-                    // matrix.print(F("Gameover"));
-
-                    // if (--cursorIndex < -46)
-                    // {
-                    //   cursorIndex = matrix.width();
-
-                    //   matrix.setTextColor(colors[loopTimes]);
-                    //   ++loopTimes;
-                    // }
-                    // matrix.setCursor(0, 8);
-                    // matrix.print(score);
-                    // matrix.show();
                 }
             }
                 break;
@@ -372,3 +344,15 @@ MenuResult snakeLoop(PixiGFX *graphics) {
     }
     return result;
 }
+
+Menu_t snakeDifficultyMenu[] = {
+    DEFINE_MENU_FUNCTION("Easy", snakeSetup, snakeLoop),    
+    DEFINE_MENU_FUNCTION("Hard", snakeSetup, snakeLoop),
+    DEFINE_EMPTY_MENU(),
+};
+
+Menu_t snakeMenu[] = {
+    DEFINE_MENU_FUNCTION("Start", snakeSetup, snakeLoop),    
+    DEFINE_MENU("Difficulty", snakeDifficultyMenu),
+    DEFINE_EMPTY_MENU(),
+};
