@@ -187,98 +187,117 @@ void ProcessTasks(void)
     }
 }
 
-UserInput_t ReadUSBUserInputs(void)
-{
-    UserInput_t result = { .AllBits = 0x00 };
+unsigned char Read(void) {
+
+    const MAX_USB_BUFFER_SIZE = CDC_DATA_OUT_EP_SIZE;
+    static unsigned char readBuf[CDC_DATA_OUT_EP_SIZE]; //Buffer to store the incoming USB Data
+    
+    static uint8_t readInPnt = 0;
+    static uint8_t readOutPnt = 0;
+
+    if (readInPnt != readOutPnt)
+    {
+        return readBuf[++readOutPnt];
+    }
 
     if( USBGetDeviceState() < CONFIGURED_STATE )
     {
-        return result;
+        return -1;
     }
 
     if( USBIsDeviceSuspended() == true )
     {
-        return result;
+        return -1;
     }
 
     if( USBUSARTIsTxTrfReady() == true)
     {
-        static unsigned char readBuf[CDC_DATA_OUT_EP_SIZE]; //Buffer to store the incoming USB Data
         unsigned int readCount;
 
         readCount = getsUSBUSART(readBuf, CDC_DATA_OUT_EP_SIZE);
 
         if (readCount > 0)
         {
-            switch (readBuf[0])
+            readInPnt = readCount - 1;
+            readOutPnt = 0;
+            return readBuf[0];
+        }
+    }
+    
+    return -1;
+}
+
+UserInput_t ReadUSBUserInputs(void)
+{
+    UserInput_t result = { .AllBits = 0x00 };
+
+    switch (Read())
+    {
+        case 'a':
+        case 'A':
+        {
+            result.JoyLeft = 1;
+            break;
+        }
+            
+        case 's':
+        case 'S':
+        {
+            result.JoyDown = 1;
+            break;
+        }
+        
+        case 'd':
+        case 'D':
+        {
+            result.JoyRight = 1;
+            break;
+        }
+
+        case 'w':
+        case 'W':
+        {
+            result.JoyUp = 1;
+            break;
+        }
+        
+        // Handle escape codes
+        case '\x1b':
+        {
+            if (Read() == '[')
             {
-                case 'a':
-                case 'A':
+                switch (Read())
                 {
-                    result.JoyLeft = 1;
-                    break;
-                }
-                    
-                case 's':
-                case 'S':
-                {
-                    result.JoyDown = 1;
-                    break;
-                }
-                
-                case 'd':
-                case 'D':
-                {
-                    result.JoyRight = 1;
-                    break;
-                }
-
-                case 'w':
-                case 'W':
-                {
-                    result.JoyUp = 1;
-                    break;
-                }
-                
-                // Handle escape codes
-                case '\x1b':
-                {
-                    if (readBuf[1] == '[')
+                    case 'D':
                     {
-                        switch (readBuf[2])
-                        {
-                            case 'D':
-                            {
-                                result.JoyLeft = 1;
-                                break;
-                            }
+                        result.JoyLeft = 1;
+                        break;
+                    }
 
-                            case 'B':
-                            {
-                                result.JoyDown = 1;
-                                break;
-                            }
+                    case 'B':
+                    {
+                        result.JoyDown = 1;
+                        break;
+                    }
 
-                            case 'C':
-                            {
-                                result.JoyRight = 1;
-                                break;
-                            }
+                    case 'C':
+                    {
+                        result.JoyRight = 1;
+                        break;
+                    }
 
-                            case 'A':
-                            {
-                                result.JoyUp = 1;
-                                break;
-                            }
-                        }
+                    case 'A':
+                    {
+                        result.JoyUp = 1;
+                        break;
                     }
                 }
-                    
-                default:
-                {
-                    break;
-                }
             }
+        }
+            
+        default:
+        {
+            break;
         }
     }
 
