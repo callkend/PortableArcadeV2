@@ -169,8 +169,8 @@ int _PG_DrawChar(PixiGFX *graphics, PGfxCharacter ch, int cursorX, int cursorY, 
     if (ch.Width > 0)
     {
         // Check the the character will render in visible space
-        if (cursorX < graphics->Matrix->Width && (ch.Width + cursorX) > 0 &&
-            (cursorY + 8) >= 0 && cursorY < graphics->Matrix->Height)
+        if (cursorX < (int)graphics->Matrix->Width && (cursorX + ch.Width) > 0 &&
+            (cursorY + 8) >= 0 && cursorY < (int)graphics->Matrix->Height)
         {
             // The character will render on the screen at least a little
 
