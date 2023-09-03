@@ -18,7 +18,7 @@
     The generated drivers are tested against the following:
         Compiler          :  XC16 v1.36
         MPLAB 	          :  MPLAB X v5.10
-*/
+ */
 
 /*
     (c) 2016 Microchip Technology Inc. and its subsidiaries. You may use this
@@ -40,11 +40,11 @@
 
     MICROCHIP PROVIDES THIS SOFTWARE CONDITIONALLY UPON YOUR ACCEPTANCE OF THESE
     TERMS.
-*/
+ */
 
 /**
   Section: Included Files
-*/
+ */
 #include <stdint.h>
 #include <string.h>
 
@@ -118,7 +118,7 @@ MenuResult ManuallyAdjustBrightness(PixiGFX * graphics) {
     MenuResult result = { .MenuReturn = Continue, .NextDelay = 20 };
 
     if (input.JoyInputs != input.LastJoyInputs) {
-        
+
         if (input.JoyUp) {
             if (graphics->Brightness < 7) {
                 PG_SetBrightness(graphics, graphics->Brightness + 1);
@@ -134,7 +134,7 @@ MenuResult ManuallyAdjustBrightness(PixiGFX * graphics) {
             return result;
         }
 
-        PG_DrawNumber(graphics, graphics->Brightness, 
+        PG_DrawNumber(graphics, graphics->Brightness,
                 (graphics->Matrix->Width >> 1) - 3,
                 (graphics->Matrix->Height >> 1) - 4,
                 White, Black, &Font1);
@@ -193,7 +193,7 @@ unsigned char Read(void) {
 
     const MAX_USB_BUFFER_SIZE = CDC_DATA_OUT_EP_SIZE;
     static unsigned char readBuf[CDC_DATA_OUT_EP_SIZE]; //Buffer to store the incoming USB Data
-    
+
     static uint8_t readInPnt = 0;
     static uint8_t readOutPnt = 0;
 
@@ -225,7 +225,7 @@ unsigned char Read(void) {
             return readBuf[0];
         }
     }
-    
+
     return -1;
 }
 
@@ -241,14 +241,14 @@ UserInput_t ReadUSBUserInputs(void)
             result.JoyLeft = 1;
             break;
         }
-            
+
         case 's':
         case 'S':
         {
             result.JoyDown = 1;
             break;
         }
-        
+
         case 'd':
         case 'D':
         {
@@ -262,8 +262,8 @@ UserInput_t ReadUSBUserInputs(void)
             result.JoyUp = 1;
             break;
         }
-        
-        // Handle escape codes
+
+            // Handle escape codes
         case '\x1b':
         {
             if (Read() == '[')
@@ -296,7 +296,7 @@ UserInput_t ReadUSBUserInputs(void)
                 }
             }
         }
-            
+
         default:
         {
             break;
@@ -316,32 +316,28 @@ int main(void)
     
     PP_Init();
     PP_InitChannel(4, DisplayArray, LEDCount, LowestWhite);
-       Setup();
+
+    Setup();
+    // Release MCLR on the D-FlipFlops
+    LATFbits.LATF5 = 1;
+
+    // uint8_t sdCardInitResult = SDCardInit();
     
-    SDCardInit();
-
-
-    // Release MCLR on the D-FlipFlops
-    LATFbits.LATF5 = 1;
-
-    // Release MCLR on the D-FlipFlops
-    LATFbits.LATF5 = 1;
-
     extern uint16_t PixelMap[];
 
     Menu_t mainMenu = DEFINE_MENU("Main Menu", mainMenuSubs);
     menuState.ActiveMenu = &mainMenu;
     menuState.ActiveLoop = NULL;
-     
+
     PixiMatrix matrix = PM_Init(32, 24, DisplayArray, PixelMap);
     PixiGFX g = PG_Init(&matrix);
     graphics = &g;
     PG_SetBrightness(graphics, 3);
-    
+
     PP_SetAutoUpdate(true);
-    
+
     ResetArcade(false);
-    
+
     RenderMenu(menuState.ActiveMenu, graphics);
 
     TMR2_SetInterruptHandler(&Timer2_Tick);
@@ -361,12 +357,12 @@ int main(void)
 
 // Button Interrupt
 void __attribute__((interrupt,no_auto_psv)) _CNInterrupt(){
-    
+
     // Clear the flag
     IFS1bits.CNIF = 0;
 }
 
 /**
  End of File
-*/
+ */
 

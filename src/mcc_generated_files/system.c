@@ -58,6 +58,7 @@ void SYSTEM_Initialize(void)
     INTERRUPT_Initialize();
     CLOCK_Initialize();
     SPI3_Initialize();
+    DMA_Initialize();
     USBDeviceInit();
     USBDeviceAttach();
     TMR2_Initialize();
