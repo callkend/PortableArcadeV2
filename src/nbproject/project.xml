@@ -22,6 +22,7 @@
                 <sourceRootElem>PixiPusher/</sourceRootElem>
                 <sourceRootElem>PortableArcade/</sourceRootElem>
                 <sourceRootElem>FileSystem/</sourceRootElem>
+                <sourceRootElem>mcc_generated_files</sourceRootElem>
             </sourceRootList>
             <confList>
                 <confElem>

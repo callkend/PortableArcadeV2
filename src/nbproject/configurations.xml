@@ -28,9 +28,10 @@
         <itemPath>mcc_generated_files/traps.h</itemPath>
         <itemPath>mcc_generated_files/system.h</itemPath>
         <itemPath>mcc_generated_files/epmp.h</itemPath>
-        <itemPath>mcc_generated_files/spi3.h</itemPath>
         <itemPath>mcc_generated_files/dma.h</itemPath>
         <itemPath>mcc_generated_files/tmr2.h</itemPath>
+        <itemPath>mcc_generated_files/spi3.c</itemPath>
+        <itemPath>mcc_generated_files/spi3.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="PixiPusher" projectFiles="true">
         <logicalFolder name="f1" displayName="Fonts" projectFiles="true">
@@ -82,7 +83,6 @@
         <itemPath>mcc_generated_files/pin_manager.c</itemPath>
         <itemPath>mcc_generated_files/traps.c</itemPath>
         <itemPath>mcc_generated_files/epmp.c</itemPath>
-        <itemPath>mcc_generated_files/spi3.c</itemPath>
         <itemPath>mcc_generated_files/dma.c</itemPath>
         <itemPath>mcc_generated_files/tmr2.c</itemPath>
       </logicalFolder>
@@ -125,6 +125,7 @@
     <Elem>PixiPusher/</Elem>
     <Elem>PortableArcade/</Elem>
     <Elem>FileSystem/</Elem>
+    <Elem>mcc_generated_files</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
