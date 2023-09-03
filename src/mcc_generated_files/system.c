@@ -47,6 +47,7 @@
 #include "system.h"
 #include "interrupt_manager.h"
 #include "traps.h"
+#include "tmr2.h"
 #include "usb/usb.h"
 #include "dma.h"
 
@@ -58,6 +59,7 @@ void SYSTEM_Initialize(void)
     DMA_Initialize();
     USBDeviceInit();
     USBDeviceAttach();
+    TMR2_Initialize();
 }
 
 /**

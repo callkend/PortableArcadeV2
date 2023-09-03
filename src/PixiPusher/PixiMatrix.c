@@ -14,6 +14,20 @@ PixiMatrix PM_Init(uint16_t width, uint16_t height, uint8_t *pixelArray, const u
     return result;
 }
 
+uint16_t PM_GetLinerOffset(PixiMatrix* matrix, uint16_t x, uint16_t y) {
+    
+    // Make sure the pixel is rendered in a safe space;
+    if (x < matrix->Width && y < matrix->Height)
+    {
+        uint16_t linerLocation = y * matrix->Width + x;
+        return matrix->MatrixMap[linerLocation] * PixelSize;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
 uint8_t* PM_GetLinerLocation(PixiMatrix* matrix, uint16_t x, uint16_t y) {
     
     // Make sure the pixel is rendered in a safe space;

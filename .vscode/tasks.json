@@ -22,6 +22,22 @@
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "label": "MPLABX Clean",
+            "type": "mplabx",
+            "task": "clean",
+            "projectFolder": "${workspaceFolder}/src",
+            "configuration": "default",
+            "problemMatcher": [
+                {
+                    "base": "$xc",
+                    "fileLocation": [
+                        "relative",
+                        "${workspaceFolder}/src"
+                    ],
+                }
+            ]
         }
     ]
 }

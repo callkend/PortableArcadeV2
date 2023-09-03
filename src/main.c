@@ -46,9 +46,11 @@
   Section: Included Files
 */
 #include <stdint.h>
+#include <string.h>
 
 #include "mcc_generated_files/system.h"
 #include "mcc_generated_files/usb/usb.h"
+#include "mcc_generated_files/tmr2.h"
 
 #include "PixiPusher/PixiPixel.h"
 #include "PixiPusher/PixiMatrix.h"
@@ -57,10 +59,250 @@
 #include "PixiPusher/setup.h"
 
 #include "PortableArcade/PortableArcade.h"
+#include "PortableArcade/Menu.h"
+
+#include "PortableArcade/Games/Tetris.h"
+
+#include "PortableArcade/ArcadeTest.h"
 
 #define LEDCount (768)
 
 uint8_t DisplayArray[LEDCount * PixelSize];
+
+extern const PGfxFont Font1;
+
+PixiGFX *graphics;
+
+MenuState_t menuState;
+
+typedef int (*TaskHandle)(void);
+
+typedef struct
+{
+    TaskHandle Handle;
+    uint8_t Tick;
+    uint8_t Top;
+} Task_t;
+
+#define DEFINE_TASK(handle, tick, top) \
+    {                                  \
+        .Handle = handle,              \
+        .Tick = tick,                  \
+        .Top = top                     \
+    }
+
+MenuResult ManuallyAdjustBrightness(PixiGFX * graphics);
+
+extern Menu_t testMenu[];
+extern Menu_t snakeMenu[];
+extern Menu_t tetrisMenu[];
+
+Menu_t configMenu[] = {
+    DEFINE_MENU_FUNCTION("Bright", NULL, ManuallyAdjustBrightness),
+    DEFINE_EMPTY_MENU(),
+};
+
+Menu_t mainMenuSubs[] = {
+    DEFINE_MENU("Snake", snakeMenu),
+    DEFINE_MENU("Tetris", tetrisMenu),
+    DEFINE_MENU("Config", configMenu),
+    DEFINE_MENU("Test", testMenu),
+    DEFINE_EMPTY_MENU(),
+};
+
+MenuResult ManuallyAdjustBrightness(PixiGFX * graphics) {
+
+    UserInput_t input = ReadUserInputs();
+    MenuResult result = { .MenuReturn = Continue, .NextDelay = 20 };
+
+    if (input.JoyInputs != input.LastJoyInputs) {
+        
+        if (input.JoyUp) {
+            if (graphics->Brightness < 7) {
+                PG_SetBrightness(graphics, graphics->Brightness + 1);
+            }
+
+        } else if (input.JoyDown) {
+            if (graphics->Brightness > 1) {
+                PG_SetBrightness(graphics, graphics->Brightness - 1);
+            }
+
+        } else if (input.JoyLeft) {
+            result.MenuReturn = Exit;
+            return result;
+        }
+
+        PG_DrawNumber(graphics, graphics->Brightness, 
+                (graphics->Matrix->Width >> 1) - 3,
+                (graphics->Matrix->Height >> 1) - 4,
+                White, Black, &Font1);
+    }
+
+    return result;
+}
+
+int MenuTask(void) {
+
+    return ProcessMenus(&menuState, graphics);
+}
+
+Task_t Tasks[] = {
+    DEFINE_TASK(MenuTask, 0, 20),
+};
+
+uint8_t tasksSize = sizeof(Tasks) / sizeof(Tasks[1]);
+bool tasksTicked = false;
+
+void Timer2_Tick(void) {
+
+    for (uint8_t i = 0; i < tasksSize; ++i)
+    {
+        ++Tasks[i].Tick;
+    }
+
+    tasksTicked = true;
+}
+
+void ProcessTasks(void)
+{
+    if (tasksTicked) {
+        tasksTicked = false;
+
+        Task_t *task;
+
+        for (uint8_t i = 0; i < tasksSize; ++i)
+        {
+            task = &Tasks[i];
+
+            if (task->Tick >= task->Top)
+            {
+                task->Tick = 0;
+                int nextTop = task->Handle();
+
+                if (nextTop > 0) {
+                    task->Top = nextTop;
+                }
+            }
+        }
+    }
+}
+
+unsigned char Read(void) {
+
+    const MAX_USB_BUFFER_SIZE = CDC_DATA_OUT_EP_SIZE;
+    static unsigned char readBuf[CDC_DATA_OUT_EP_SIZE]; //Buffer to store the incoming USB Data
+    
+    static uint8_t readInPnt = 0;
+    static uint8_t readOutPnt = 0;
+
+    if (readInPnt != readOutPnt)
+    {
+        return readBuf[++readOutPnt];
+    }
+
+    if( USBGetDeviceState() < CONFIGURED_STATE )
+    {
+        return -1;
+    }
+
+    if( USBIsDeviceSuspended() == true )
+    {
+        return -1;
+    }
+
+    if( USBUSARTIsTxTrfReady() == true)
+    {
+        unsigned int readCount;
+
+        readCount = getsUSBUSART(readBuf, CDC_DATA_OUT_EP_SIZE);
+
+        if (readCount > 0)
+        {
+            readInPnt = readCount - 1;
+            readOutPnt = 0;
+            return readBuf[0];
+        }
+    }
+    
+    return -1;
+}
+
+UserInput_t ReadUSBUserInputs(void)
+{
+    UserInput_t result = { .AllBits = 0x00 };
+
+    switch (Read())
+    {
+        case 'a':
+        case 'A':
+        {
+            result.JoyLeft = 1;
+            break;
+        }
+            
+        case 's':
+        case 'S':
+        {
+            result.JoyDown = 1;
+            break;
+        }
+        
+        case 'd':
+        case 'D':
+        {
+            result.JoyRight = 1;
+            break;
+        }
+
+        case 'w':
+        case 'W':
+        {
+            result.JoyUp = 1;
+            break;
+        }
+        
+        // Handle escape codes
+        case '\x1b':
+        {
+            if (Read() == '[')
+            {
+                switch (Read())
+                {
+                    case 'D':
+                    {
+                        result.JoyLeft = 1;
+                        break;
+                    }
+
+                    case 'B':
+                    {
+                        result.JoyDown = 1;
+                        break;
+                    }
+
+                    case 'C':
+                    {
+                        result.JoyRight = 1;
+                        break;
+                    }
+
+                    case 'A':
+                    {
+                        result.JoyUp = 1;
+                        break;
+                    }
+                }
+            }
+        }
+            
+        default:
+        {
+            break;
+        }
+    }
+
+    return result;
+}
 
 /*
                          Main application
@@ -75,145 +317,36 @@ int main(void)
     
     Setup();
 
+    // Release MCLR on the D-FlipFlops
+    LATFbits.LATF5 = 1;
+
     extern uint16_t PixelMap[];
-    extern const PGfxFont Font1;
 
-#define TextLineLength 16
-#define LineCount 3
-    
-    char text[LineCount][TextLineLength];
-    
-    for (int y = 0; y < LineCount; ++y)
-    {
-        for (int x = 0; x < LineCount; ++x)
-        {
-            text[y][x] = 0x00;
-        }
-    }
-    
-    char activeLine = 0;
-
+    Menu_t mainMenu = DEFINE_MENU("Main Menu", mainMenuSubs);
+    menuState.ActiveMenu = &mainMenu;
+    menuState.ActiveLoop = NULL;
+     
     PixiMatrix matrix = PM_Init(32, 24, DisplayArray, PixelMap);
-    Color color = { .R = 0, .G = 0, .B = 255, .A = 0xFF };
+    PixiGFX g = PG_Init(&matrix);
+    graphics = &g;
+    PG_SetBrightness(graphics, 3);
     
     PP_SetAutoUpdate(true);
-
-    int de = 0;
-    int la = 0;
     
+    ResetArcade(false);
+    
+    RenderMenu(menuState.ActiveMenu, graphics);
+
+    TMR2_SetInterruptHandler(&Timer2_Tick);
+
+    SetAlternateUserInputHandle(&ReadUSBUserInputs);
+
     while (1)
-    {        
-        if (++de > 10000)
-        {
-            UpdateScoreBoard(la);
-            UpdateBonusBoard(la);
-            
-            if (++la >= 10000)
-            {
-                la = 0;
-            }
-            de = 0;
-        }
-        
-        if( USBGetDeviceState() < CONFIGURED_STATE )
-        {
-            continue;
-        }
-
-        if( USBIsDeviceSuspended() == true )
-        {
-            continue;
-        }
-
-        if( USBUSARTIsTxTrfReady() == true)
-        {
-            static unsigned char readBuf[CDC_DATA_OUT_EP_SIZE]; //Buffer to store the incoming USB Data
-            unsigned int readCount;
-
-            readCount = getsUSBUSART(readBuf, CDC_DATA_OUT_EP_SIZE);
-
-            if (readCount > 0)
-            {
-                char c = readBuf[0];
-                
-                switch (c)
-                {
-                    case '\n':
-                        break;
-                        
-                    case '\r':
-                        if (++activeLine >= LineCount)
-                        {
-                            activeLine = 0;
-                        }
-                        break;
-                    
-                    case '\x7F':
-                    case '\b':
-                    {
-                        char *p = text[activeLine];
-                        
-                        if (*p == 0x00)
-                        {
-                            if (activeLine > 0)
-                            {
-                                --activeLine;
-                            }
-                        }
-                        else
-                        {
-                            while (*p)
-                            {
-                                ++p;
-                            }
-
-                            --p;
-                            *p = 0x00;     
-                        }
-
-                    }
-                        break;
-                        
-                    default:
-                    {
-                        char *p = text[activeLine];
-                        
-                        while (*p)
-                        {
-                            ++p;
-                        }
-                        
-                        char length = p - text[activeLine];
-                        
-                        if (length < (TextLineLength - 1))
-                        {
-                            *p++ = c;
-                            *p = 0x00;
-                        }
-                    }
-                        break;
-                }
-                
-                {
-                    char *p = text[activeLine];
-                    
-                    char x = PG_GetTextLength(p, &Font1);
-                    x = 15 - (x >> 1);
-                
-                    char y = (activeLine * 8);
-                    
-                    PG_FillRectangle(&matrix, 0, y, 32, y + 8, Black);
-                           
-                    PG_DrawText(&matrix, p, x, y, color, Black, &Font1);        
-                }
-
-            }
-        }
+    {
+        ProcessTasks();
 
         // PP_Service();
         CDCTxService();
-        
-        
     }
 
     return 1;

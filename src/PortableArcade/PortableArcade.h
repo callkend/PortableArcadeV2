@@ -14,29 +14,57 @@ extern "C" {
 
     typedef union UserInput_t
     {
-      struct
-      {
-        bool JoyLeft:1;
+      struct {
+        bool JoyLeft :1;
         bool JoyRight:1;
-        bool JoyUp:1;
-        bool JoyDown:1;
-        bool Button1:1;
-        bool Button2:1;
-        bool Button3:1;
-        bool Button4:1;
+        bool JoyUp   :1;
+        bool JoyDown :1;
+        bool Button1 :1;
+        bool Button2 :1;
+        bool Button3 :1;
+        bool Button4 :1;
+ 
       };
-      struct 
-      {
-        uint8_t AllBits;
+
+      struct {
+        uint8_t JoyInputs        : 4;
+        uint8_t ButtonInputs     : 4;
+        
+        uint8_t LastJoyInputs    : 4;
+        uint8_t LastButtonInputs : 4;
+      };
+
+      struct {
+        uint8_t AllBits  : 8;
+        uint8_t LastBits : 8;
       };
     } UserInput_t;
 
+    typedef enum {
+        NO_DIRECTION,
+        UP,
+        DOWN,
+        LEFT,
+        RIGHT
+    } Direction_e;
+    
+    typedef UserInput_t (*ReadUserInputsHandle)(void);
+
+    void ClearScoreBoard(void);
 
     void UpdateScoreBoard(uint16_t value);
     
+    void ClearBonusBoard(void);
+    
     void UpdateBonusBoard(uint16_t value);
     
+    void ResetArcade(bool zeroBoards);
+    
     UserInput_t ReadUserInputs(void);
+
+    void SetAlternateUserInputHandle(ReadUserInputsHandle handle);
+    
+    Direction_e GetDirection(void);
 
 #ifdef	__cplusplus
 }

@@ -12,3 +12,6 @@ Package-*.bash
 
 .generated_files
 .ca
+
+*.log
+*.log.inx
