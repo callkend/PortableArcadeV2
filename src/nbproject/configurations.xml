@@ -24,6 +24,7 @@
         <itemPath>mcc_generated_files/pin_manager.h</itemPath>
         <itemPath>mcc_generated_files/traps.h</itemPath>
         <itemPath>mcc_generated_files/system.h</itemPath>
+        <itemPath>mcc_generated_files/epmp.h</itemPath>
         <itemPath>mcc_generated_files/dma.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="PixiPusher" projectFiles="true">
@@ -36,7 +37,10 @@
         <itemPath>PixiPusher/Color.h</itemPath>
         <itemPath>PixiPusher/PixiGFX.h</itemPath>
       </logicalFolder>
-      <itemPath>PortableArchade.h</itemPath>
+      <logicalFolder name="f2" displayName="PortableArcade" projectFiles="true">
+        <itemPath>PortableArcade/PortableArcade.h</itemPath>
+        <itemPath>PortableArcade/LCDText.h</itemPath>
+      </logicalFolder>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -62,6 +66,7 @@
         <itemPath>mcc_generated_files/mcc.c</itemPath>
         <itemPath>mcc_generated_files/pin_manager.c</itemPath>
         <itemPath>mcc_generated_files/traps.c</itemPath>
+        <itemPath>mcc_generated_files/epmp.c</itemPath>
         <itemPath>mcc_generated_files/dma.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="PixiPusher" projectFiles="true">
@@ -73,6 +78,9 @@
         <itemPath>PixiPusher/PixiPixel.c</itemPath>
         <itemPath>PixiPusher/Color.c</itemPath>
         <itemPath>PixiPusher/PixiGFX.c</itemPath>
+      </logicalFolder>
+      <logicalFolder name="f2" displayName="PortableArcade" projectFiles="true">
+        <itemPath>PortableArcade/PortableArcade.c</itemPath>
       </logicalFolder>
       <itemPath>main.c</itemPath>
       <itemPath>PortableArchade.c</itemPath>

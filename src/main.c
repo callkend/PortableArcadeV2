@@ -56,6 +56,8 @@
 #include "PixiPusher/Color.h"
 #include "PixiPusher/setup.h"
 
+#include "PortableArcade/PortableArcade.h"
+
 #define LEDCount (768)
 
 uint8_t DisplayArray[LEDCount * PixelSize];
@@ -96,8 +98,23 @@ int main(void)
     
     PP_SetAutoUpdate(true);
 
+    int de = 0;
+    int la = 0;
+    
     while (1)
-    {
+    {        
+        if (++de > 10000)
+        {
+            UpdateScoreBoard(la);
+            UpdateBonusBoard(la);
+            
+            if (++la >= 10000)
+            {
+                la = 0;
+            }
+            de = 0;
+        }
+        
         if( USBGetDeviceState() < CONFIGURED_STATE )
         {
             continue;
@@ -195,6 +212,8 @@ int main(void)
 
         // PP_Service();
         CDCTxService();
+        
+        
     }
 
     return 1;
