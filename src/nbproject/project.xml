@@ -19,6 +19,9 @@
                 <sourceRootElem>Adafruit_NeoPixel-master</sourceRootElem>
                 <sourceRootElem>PortableArcade</sourceRootElem>
                 <sourceRootElem>FileSystem</sourceRootElem>
+                <sourceRootElem>PixiPusher/</sourceRootElem>
+                <sourceRootElem>PortableArcade/</sourceRootElem>
+                <sourceRootElem>FileSystem/</sourceRootElem>
             </sourceRootList>
             <confList>
                 <confElem>

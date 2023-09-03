@@ -22,6 +22,8 @@ void __init_PMP(void)
     // Enable WS, RS, Min Latch Strobes and Hold Strobes
     PMCON3 = 0xC000;
     
+    PMCON3bits.AWAITE = 1;
+
     // Enable Address lines 0-4
     PMCON4 = 0x001F;
     
@@ -29,7 +31,7 @@ void __init_PMP(void)
     PMCS1CF = 0x0000;
 
     // Use this setting to extend the read and write strobe
-    // PMCS1MDbits.DWAITM = 1;
+    PMCS1MDbits.DWAITM = 1;
     
     // Don't use the CS2 bank
     PMCS2CFbits.CSDIS = 1;

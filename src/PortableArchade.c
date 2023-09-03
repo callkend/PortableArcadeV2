@@ -1,6 +1,8 @@
 
 #include <stdint.h>
 
+// #define TEST_ARRAY
+
 #ifdef TEST_ARRAY
 
 const uint16_t PixelMap[] = {

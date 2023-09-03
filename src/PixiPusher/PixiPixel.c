@@ -311,7 +311,7 @@ void _PP_Fill(PixiChannelSettings settings, Color c)
 {
     uint8_t *pnt = settings.Array;
 
-    for (int i = 0; i < settings.Count; i += PixelSize) {
+    for (int i = 0; i < settings.Count; ++i) {
         *pnt++ = c.G;
         *pnt++ = c.R;
         *pnt++ = c.B;
