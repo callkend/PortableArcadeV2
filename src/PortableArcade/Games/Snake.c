@@ -72,7 +72,6 @@ const Color GOBBLE_COLOR = {.R = 91, .G = 215, .B = 213, .A = 0xFF};
 const Color SNAKE_BACKGROUND_COLOR = {.R = 0, .G = 0, .B = 0, .A = 0xFF};
 const Color SNAKE_BORDER_COLOR = {.R = 16, .G = 16, .B = 16, .A = 0xFF};
 
-// Static Variables
 Snake_t Snake;
 SnakeLocation_t SnakeBody[MAX_SNAKE_SIZE];
 uint16_t SnakeHeadIndex = 0;
@@ -96,12 +95,18 @@ void SetPixel(SnakeLocation_t location, Color color) {
     PG_SetPixel(graphics, location.X, location.Y, color);
 }
 
+//Better variable names?
 bool LocationsEqual(SnakeLocation_t left, SnakeLocation_t right) {
     return left.A == right.A;
 }
 
+
+//Detects if Snake collid with a object.
 SnakeCollision_e GetSnakeCollision(SnakeLocation_t location) {
 
+
+    //I believe the else if can be replaced with just if statements because the return would prevent the following conditions.
+    //I would like to reorder if possible to have no collision be the first statement.
     if (LocationsEqual(location, Cherry)) {
         return CHERRY_COLLISION;
     } else if (Difficulty == HARD && LocationsEqual(location, Gobble)) {
@@ -113,6 +118,7 @@ SnakeCollision_e GetSnakeCollision(SnakeLocation_t location) {
     }
 }
 
+//Should get random location really be a separate function as it is only called from one place from what I can see?
 SnakeLocation_t GetRandomLocation(void) {
     SnakeLocation_t result;
     result.X = SNAKE_GAME_OFFSET_X + (rand() % SNAKE_GAME_SIZE_X);
