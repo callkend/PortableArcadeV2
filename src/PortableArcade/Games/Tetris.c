@@ -75,6 +75,7 @@ typedef struct
     int8_t Y;
 } ShapePoint_t;
 
+// Why not use a unsigned int8 if you are only expecting positives?
 // /** @brief A positive integer location on the array. */
 typedef struct
 {
@@ -331,6 +332,7 @@ uint8_t LineErase()
         {
             ++linesCleared;
         }
+        //A check could be added to see if 4 lines have been cleared to exit the loop early.
     }
 
     return linesCleared;
@@ -481,6 +483,7 @@ bool CheckFit(Location_t playerPostion, Shape_t shape)
 
         Location_t point = points[i];
 
+        //Can't we get rid of the else ifs and just do if because if any of the statements are true it returns false leaving the program?
         if (point.X < GameOffsetX)
         {
             return false;
