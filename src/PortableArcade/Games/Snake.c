@@ -164,6 +164,11 @@ MenuResult snakeSetup(PixiGFX *graphics) {
 
     // Randomizes where the cherry starts
     srand(1); // TODO: Seed this thing!
+    /*
+    I know we currently don't have one on the boards but an idea that I had was to use a temp sensor and then do a reading on it
+    to see the random number generator. The temp sensor could also be used to make sure the internal temp of the arcade doesn't 
+    get too hot.
+    */
 
     //Initializes the LED matrix, clears it, and setups the IO
     ResetArcade(true);
